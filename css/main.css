@@ -8,6 +8,7 @@
 @import url("ui-enhancements.css");
 @import url("forms.css");
 @import url("menus.css");
+@import url("layout/layout.css");
 
 * {
     padding: 0;
@@ -15,35 +16,4 @@
     font-family: "Google Sans", "Montserrat", sans-serif;
     font-optical-sizing: auto;
     font-style: normal;
-}
-
-html>body {
-    height: 100%;
-    margin: 0 auto;
-    min-height: 100vh;
-    padding: 0;
-    max-width: var(--max-width);
-    padding: 0 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--background);
-}
-
-body>main {
-    margin: 0 auto;
-    width: 100%;
-    height: var(--vh);
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-@media (min-width: 1440px) {
-    body>main {
-        width: 1440px;
-        padding: 0;
-    }
 }

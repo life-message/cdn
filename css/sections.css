@@ -1,3 +1,10 @@
+@media (min-width: 1440px) {
+    body>main {
+        width: 1440px;
+        padding: 0;
+    }
+}
+
 div {
     display: flex;
     flex-direction: column;
@@ -13,11 +20,18 @@ section {
     box-sizing: border-box;
 }
 
-section header:first-of-type {
+section>header:first-of-type {
     display: flex;
     align-items: center;
-    margin-bottom: 40px;
     gap: 20px;
+}
+
+section>header:has(h2) {
+    margin-bottom: 40px;
+}
+
+section>header:has(h3, h4) {
+    margin-bottom: 20px;
 }
 
 html>body>section {
@@ -33,6 +47,7 @@ html>body>section {
 nav {
     display: flex;
     gap: var(--gap);
+    align-items: center;
 }
 
 @media (max-width: 768px) {
