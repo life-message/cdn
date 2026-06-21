@@ -34,7 +34,12 @@ function initSwitchers(attrName = 'data-replaced') {
         });
 
         if (switchButtons.length) {
-            switchTo(switchButtons[0].getAttribute(attrName));
+            const visibleTarget = Array.from(targets).find(t => !t.hidden);
+            const defaultValue = visibleTarget
+                ? visibleTarget.getAttribute(attrName)
+                : switchButtons[0].getAttribute(attrName);
+
+            switchTo(defaultValue);
         }
     });
 }
