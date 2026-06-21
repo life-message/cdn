@@ -1,5 +1,5 @@
 const form = document.getElementById('auth-form');
-const switchButtons = form.querySelectorAll('header nav button[data-form-body]');
+const switchButtons = form.querySelectorAll('button[data-form-body]');
 const formBodies = form.querySelectorAll('form > div, :scope > div');
 
 function switchForm(targetId) {
