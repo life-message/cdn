@@ -12,7 +12,7 @@ class LocalStorageFieldManager {
         this.setupMutationObserver();
 
         // Реакция на изменения localStorage из других вкладок
-        window.addEventListener('storage', (event) => {
+        window.addEventListener("storage", (event) => {
             if (event.key !== null && this.fieldsToRecords.has(event.key)) {
                 this.applyField(event.key);
             }
@@ -23,16 +23,20 @@ class LocalStorageFieldManager {
     }
 
     registerExistingFields(root = document) {
-        root.querySelectorAll('[data-storage]').forEach((el) => this.registerElement(el));
+        root.querySelectorAll("[data-storage]").forEach((el) =>
+            this.registerElement(el),
+        );
     }
 
     registerElement(element) {
         if (this.elementToRecord.has(element)) {
             return this.elementToRecord.get(element);
         }
-        const fieldName = element.getAttribute('data-storage');
+        const fieldName = element.getAttribute("data-storage");
         if (!fieldName) return null;
-        const isFormField = ['INPUT', 'TEXTAREA', 'SELECT'].includes(element.tagName);
+        const isFormField = ["INPUT", "TEXTAREA", "SELECT"].includes(
+            element.tagName,
+        );
         const record = {
             fieldName,
             element,
@@ -45,12 +49,13 @@ class LocalStorageFieldManager {
         };
 
         if (!isFormField) {
-            const icon = element.querySelector('i');
+            const icon = element.querySelector("i");
             if (icon) {
                 record.icon = icon;
                 record.valueSpan =
-                    element.querySelector(':scope > span[data-storage-value]') ||
-                    this.createValueSpan(icon);
+                    element.querySelector(
+                        ":scope > span[data-storage-value]",
+                    ) || this.createValueSpan(icon);
             }
         }
 
@@ -64,14 +69,16 @@ class LocalStorageFieldManager {
     }
 
     createValueSpan(afterIcon) {
-        const span = document.createElement('span');
-        span.setAttribute('data-storage-value', '');
-        afterIcon.insertAdjacentElement('afterend', span);
+        const span = document.createElement("span");
+        span.setAttribute("data-storage-value", "");
+        afterIcon.insertAdjacentElement("afterend", span);
         return span;
     }
 
     applyAllFields() {
-        this.fieldsToRecords.forEach((_, fieldName) => this.applyField(fieldName));
+        this.fieldsToRecords.forEach((_, fieldName) =>
+            this.applyField(fieldName),
+        );
     }
 
     applyField(fieldName) {
@@ -79,7 +86,7 @@ class LocalStorageFieldManager {
         if (!records) return;
 
         const value = localStorage.getItem(fieldName);
-        const isEmpty = value === null || value === '';
+        const isEmpty = value === null || value === "";
 
         records.forEach((record) => {
             if (isEmpty) {
@@ -96,7 +103,7 @@ class LocalStorageFieldManager {
         const { element } = record;
 
         const tag = element.tagName;
-        if (tag === 'INPUT' || tag === 'TEXTAREA') {
+        if (tag === "INPUT" || tag === "TEXTAREA") {
             return;
         }
 
@@ -115,7 +122,11 @@ class LocalStorageFieldManager {
             const parent = record.parent;
             if (parent && parent.isConnected) {
                 const sibling = record.nextSibling;
-                if (sibling && sibling.isConnected && sibling.parentNode === parent) {
+                if (
+                    sibling &&
+                    sibling.isConnected &&
+                    sibling.parentNode === parent
+                ) {
                     parent.insertBefore(record.element, sibling);
                 } else {
                     parent.appendChild(record.element);
@@ -126,7 +137,7 @@ class LocalStorageFieldManager {
     }
 
     writeValue(record, value) {
-        const isReadonly = record.element.hasAttribute('data-readonly');
+        const isReadonly = record.element.hasAttribute("data-readonly");
         if (record.valueSpan) {
             if (isReadonly && record.valueSpan.textContent) return;
             if (record.valueSpan.textContent !== value) {
@@ -149,17 +160,21 @@ class LocalStorageFieldManager {
     }
 
     setupInputListeners() {
-        document.addEventListener('input', (event) => this.handleFieldChange(event.target));
-        document.addEventListener('change', (event) => this.handleFieldChange(event.target));
+        document.addEventListener("input", (event) =>
+            this.handleFieldChange(event.target),
+        );
+        document.addEventListener("change", (event) =>
+            this.handleFieldChange(event.target),
+        );
     }
 
     handleFieldChange(element) {
         if (!(element instanceof Element)) return;
 
-        const fieldName = element.getAttribute('data-storage');
-        if (!fieldName || element.hasAttribute('data-readonly')) return;
+        const fieldName = element.getAttribute("data-storage");
+        if (!fieldName || element.hasAttribute("data-readonly")) return;
 
-        const value = ['INPUT', 'TEXTAREA', 'SELECT'].includes(element.tagName)
+        const value = ["INPUT", "TEXTAREA", "SELECT"].includes(element.tagName)
             ? element.value
             : element.textContent;
 
@@ -167,7 +182,7 @@ class LocalStorageFieldManager {
     }
 
     interceptLocalStorage() {
-        const methods = ['setItem', 'removeItem', 'clear'];
+        const methods = ["setItem", "removeItem", "clear"];
 
         methods.forEach((method) => {
             const original = localStorage[method].bind(localStorage);
@@ -175,14 +190,16 @@ class LocalStorageFieldManager {
             localStorage[method] = (...args) => {
                 const result = original(...args);
 
-                if (method === 'setItem' || method === 'removeItem') {
+                if (method === "setItem" || method === "removeItem") {
                     const key = args[0];
                     if (this.fieldsToRecords.has(key)) {
                         this.applyField(key);
                     }
                 } else {
                     // clear()
-                    this.fieldsToRecords.forEach((_, key) => this.applyField(key));
+                    this.fieldsToRecords.forEach((_, key) =>
+                        this.applyField(key),
+                    );
                 }
 
                 return result;
@@ -198,12 +215,15 @@ class LocalStorageFieldManager {
                 mutation.addedNodes.forEach((node) => {
                     if (node.nodeType !== Node.ELEMENT_NODE) return;
 
-                    if (node.hasAttribute?.('data-storage') && !this.elementToRecord.has(node)) {
+                    if (
+                        node.hasAttribute?.("data-storage") &&
+                        !this.elementToRecord.has(node)
+                    ) {
                         this.registerElement(node);
                         foundNew = true;
                     }
 
-                    node.querySelectorAll?.('[data-storage]').forEach((el) => {
+                    node.querySelectorAll?.("[data-storage]").forEach((el) => {
                         if (!this.elementToRecord.has(el)) {
                             this.registerElement(el);
                             foundNew = true;
@@ -222,8 +242,8 @@ class LocalStorageFieldManager {
     }
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
         window.fieldManager = new LocalStorageFieldManager();
     });
 } else {

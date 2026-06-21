@@ -16,7 +16,7 @@ function removeNotification(notifObj) {
     }
 
     // Убираем класс для анимации скрытия
-    notifObj.element.classList.remove('show');
+    notifObj.element.classList.remove("show");
 
     // Полностью удаляем из DOM после завершения анимации
     setTimeout(() => {
@@ -28,18 +28,20 @@ function removeNotification(notifObj) {
 
 // Функция получения/создания контейнера
 function getContainer() {
-    let container = document.getElementById('notification-container');
+    let container = document.getElementById("notification-container");
     if (container) return container;
 
-    container = document.createElement('div');
-    container.id = 'notification-container';
-    container.className = 'notification-container';
+    container = document.createElement("div");
+    container.id = "notification-container";
+    container.className = "notification-container";
 
     const appendContainer = () => document.body.appendChild(container);
     if (document.body) {
         appendContainer();
     } else {
-        document.addEventListener('DOMContentLoaded', appendContainer, { once: true });
+        document.addEventListener("DOMContentLoaded", appendContainer, {
+            once: true,
+        });
     }
 
     return container;
@@ -47,41 +49,26 @@ function getContainer() {
 
 export default function notification(message, isError = false) {
     const container = getContainer();
-
-    // 1. Контроль переполнения (максимум 3 штуки)
-    // Если лимит достигнут, удаляем самое старое уведомление (первое в массиве)
     while (activeNotifications.length >= MAX_NOTIFICATIONS) {
         removeNotification(activeNotifications[0]);
     }
-
-    // 2. Создание элемента
-    const el = document.createElement('div');
-    el.className = 'notification'; // ID убран, чтобы не было дублей
-    if (isError) el.classList.add('error');
+    const el = document.createElement("div");
+    el.className = "notification";
+    if (isError) el.classList.add("error");
     el.textContent = message;
-    el.style.cursor = 'pointer'; // Подсказка, что уведомление кликабельно
+    el.style.cursor = "pointer";
 
     const notifObj = { element: el };
 
-    // 3. Обработчик клика (удаление раньше времени)
-    el.addEventListener('click', () => {
+    el.addEventListener("click", () => {
         removeNotification(notifObj);
     });
-
-    // 4. Добавляем в контейнер
     container.appendChild(el);
-
-    // 5. Настраиваем таймеры для авто-скрытия
-    // Небольшая задержка перед добавлением класса show, чтобы сработала CSS анимация появления
     notifObj.showTimeout = setTimeout(() => {
-        el.classList.add('show');
+        el.classList.add("show");
     }, 10);
-
-    // Таймер начала скрытия
     notifObj.hideTimeout = setTimeout(() => {
         removeNotification(notifObj);
     }, DURATION);
-
-    // 6. Сохраняем в массив активных
     activeNotifications.push(notifObj);
 }

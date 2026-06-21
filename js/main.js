@@ -1,13 +1,13 @@
-import './pages/menu.js';
-import './pages/templates.js';
-import notification from './notification.js';
-import { initNavigation } from './ui/header.js';
-import './ui/color.js';
-import './utils/field-sync.js';
+import "./pages/menu.js";
+import "./pages/templates.js";
+import notification from "./notification.js";
+import { initNavigation } from "./ui/header.js";
+import "./ui/color.js";
+import "./utils/field-sync.js";
 
 globalThis.notification = notification;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     initNavigation();
 });
 

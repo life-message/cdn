@@ -18,13 +18,17 @@
             }
         });
 
-        overlay.addEventListener("submit", (event) => {
-            if (overlay.contains(event.target)) {
-                setTimeout(() => {
-                    closeMenu();
-                }, 100);
-            }
-        }, true);
+        overlay.addEventListener(
+            "submit",
+            (event) => {
+                if (overlay.contains(event.target)) {
+                    setTimeout(() => {
+                        closeMenu();
+                    }, 100);
+                }
+            },
+            true,
+        );
 
         document.body.appendChild(overlay);
         return overlay;
@@ -47,7 +51,9 @@
             return templateCache.get(menuName);
         }
 
-        const fileName = menuName.endsWith(".html") ? menuName : `${menuName}.html`;
+        const fileName = menuName.endsWith(".html")
+            ? menuName
+            : `${menuName}.html`;
         const response = await fetch(`/static/menus/${fileName}`);
         if (!response.ok) {
             throw new Error(`Не удалось загрузить меню: ${menuName}`);
@@ -65,7 +71,10 @@
 
         const currentOverlay = ensureOverlay();
 
-        if (activeMenuName === menuName && currentOverlay.classList.contains("is-open")) {
+        if (
+            activeMenuName === menuName &&
+            currentOverlay.classList.contains("is-open")
+        ) {
             return;
         }
 
@@ -73,7 +82,9 @@
             const html = await loadMenuTemplate(menuName);
             const template = document.createElement("template");
             template.innerHTML = html;
-            const scripts = Array.from(template.content.querySelectorAll("script"));
+            const scripts = Array.from(
+                template.content.querySelectorAll("script"),
+            );
 
             for (const script of scripts) {
                 script.remove();

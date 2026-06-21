@@ -1,11 +1,14 @@
 const templateCache = new Map();
 async function loadSingleTemplate(element) {
-    if (element.dataset.templateLoaded === 'true' || element.dataset.templateLoaded === 'loading') {
+    if (
+        element.dataset.templateLoaded === "true" ||
+        element.dataset.templateLoaded === "loading"
+    ) {
         return;
     }
     const templateName = element.dataset.template;
     const url = `templates/${templateName}.html`;
-    element.dataset.templateLoaded = 'loading';
+    element.dataset.templateLoaded = "loading";
 
     try {
         let html = templateCache.get(templateName);
@@ -16,22 +19,24 @@ async function loadSingleTemplate(element) {
             templateCache.set(templateName, html);
         }
 
-        element.insertAdjacentHTML('beforebegin', html);
+        element.insertAdjacentHTML("beforebegin", html);
         element.remove();
-
     } catch (error) {
         console.error(`Ошибка загрузки шаблона "${templateName}":`, error);
-        element.dataset.templateLoaded = 'error';
+        element.dataset.templateLoaded = "error";
     }
 }
 
 export async function loadTemplates(container = document) {
-    const elements = container.querySelectorAll('[data-template]');
-    if (container.nodeType === Node.ELEMENT_NODE && container.hasAttribute('data-template')) {
+    const elements = container.querySelectorAll("[data-template]");
+    if (
+        container.nodeType === Node.ELEMENT_NODE &&
+        container.hasAttribute("data-template")
+    ) {
         await loadSingleTemplate(container);
     }
 
-    const promises = Array.from(elements).map(el => loadSingleTemplate(el));
+    const promises = Array.from(elements).map((el) => loadSingleTemplate(el));
     await Promise.all(promises);
 }
 
@@ -41,7 +46,10 @@ export function initTemplateLoader() {
         for (const mutation of mutations) {
             for (const node of mutation.addedNodes) {
                 if (node.nodeType === Node.ELEMENT_NODE) {
-                    if (node.hasAttribute('data-template') || node.querySelector('[data-template]')) {
+                    if (
+                        node.hasAttribute("data-template") ||
+                        node.querySelector("[data-template]")
+                    ) {
                         loadTemplates(node);
                     }
                 }
@@ -50,13 +58,13 @@ export function initTemplateLoader() {
     });
     observer.observe(document.body, {
         childList: true,
-        subtree: true
+        subtree: true,
     });
     return observer;
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initTemplateLoader);
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initTemplateLoader);
 } else {
     initTemplateLoader();
 }

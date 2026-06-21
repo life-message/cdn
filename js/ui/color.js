@@ -1,19 +1,19 @@
-const HUE_KEY = 'color';
+const HUE_KEY = "color";
 
 const updateActiveState = (deg) => {
     const currentDeg = parseInt(deg, 10);
-    document.querySelectorAll('[data-hue-adaptive]').forEach(btn => {
+    document.querySelectorAll("[data-hue-adaptive]").forEach((btn) => {
         const btnDeg = parseInt(btn.dataset.hueAdaptive, 10);
         if (btnDeg === currentDeg) {
-            btn.classList.add('active');
+            btn.classList.add("active");
         } else {
-            btn.classList.remove('active');
+            btn.classList.remove("active");
         }
     });
 };
 
 const setHue = (deg) => {
-    document.documentElement.style.setProperty('--hue-offset', `${deg}deg`);
+    document.documentElement.style.setProperty("--hue-offset", `${deg}deg`);
     localStorage.setItem(HUE_KEY, deg);
     updateActiveState(deg);
 };
@@ -25,35 +25,37 @@ const getHue = () => {
 
 const processHueButtons = (elements) => {
     const currentDeg = getHue();
-    elements.forEach(btn => {
-        if (!btn.style.getPropertyValue('--hue-target')) {
+    elements.forEach((btn) => {
+        if (!btn.style.getPropertyValue("--hue-target")) {
             const targetDeg = btn.dataset.hueAdaptive;
-            btn.style.setProperty('--hue-target', `${targetDeg}deg`);
+            btn.style.setProperty("--hue-target", `${targetDeg}deg`);
         }
         const btnDeg = parseInt(btn.dataset.hueAdaptive, 10);
         if (btnDeg === currentDeg) {
-            btn.classList.add('active');
+            btn.classList.add("active");
         } else {
-            btn.classList.remove('active');
+            btn.classList.remove("active");
         }
     });
 };
 
 const initHueButtons = () => {
-    const buttons = document.querySelectorAll('[data-hue-adaptive]');
+    const buttons = document.querySelectorAll("[data-hue-adaptive]");
     processHueButtons(buttons);
 };
 
 const hueObserver = new MutationObserver((mutations) => {
     let newButtons = [];
 
-    mutations.forEach(mutation => {
-        mutation.addedNodes.forEach(node => {
+    mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
             if (node.nodeType === 1) {
-                if (node.matches('[data-hue-adaptive]')) {
+                if (node.matches("[data-hue-adaptive]")) {
                     newButtons.push(node);
                 }
-                const descendants = node.querySelectorAll('[data-hue-adaptive]');
+                const descendants = node.querySelectorAll(
+                    "[data-hue-adaptive]",
+                );
                 if (descendants.length > 0) {
                     newButtons = newButtons.concat(Array.from(descendants));
                 }
@@ -66,30 +68,30 @@ const hueObserver = new MutationObserver((mutations) => {
     }
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     const hue = getHue();
     setHue(hue);
     initHueButtons();
 
     hueObserver.observe(document.body, { childList: true, subtree: true });
 
-    const slider = document.getElementById('hue-slider');
+    const slider = document.getElementById("hue-slider");
     if (slider) {
         slider.value = hue;
-        slider.addEventListener('input', e => {
+        slider.addEventListener("input", (e) => {
             setHue(e.target.value);
         });
     }
 
-    document.addEventListener('click', (e) => {
-        const btn = e.target.closest('[data-hue-adaptive]');
+    document.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-hue-adaptive]");
         if (btn) {
             const targetDeg = btn.dataset.hueAdaptive;
             setHue(targetDeg);
-            const currentSlider = document.getElementById('hue-slider');
+            const currentSlider = document.getElementById("hue-slider");
             if (currentSlider) currentSlider.value = targetDeg;
         }
     });
 });
 
-document.addEventListener('hue:refresh', initHueButtons);
+document.addEventListener("hue:refresh", initHueButtons);

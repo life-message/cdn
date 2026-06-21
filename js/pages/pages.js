@@ -1,87 +1,149 @@
-import page from 'https://cdn.jsdelivr.net/npm/page@1.11.6/+esm';
-import { SEOManager } from './seo.js';
-import { ResourceManager } from './resources.js';
+import page from "https://cdn.jsdelivr.net/npm/page@1.11.6/+esm";
+import { SEOManager } from "./seo.js";
+import { ResourceManager } from "./resources.js";
 
 class SPARouter {
     constructor() {
-        this.pagesDir = './pages';
+        this.pagesDir = "/pages";
         this.routesConfig = null;
-        this.cache = new Map();
+        this.htmlCache = new Map();
+        this.defaultExtensions = ["html", "htm"];
+
         this.seoManager = new SEOManager();
         this.resourceManager = new ResourceManager();
     }
 
     async init() {
         await this.loadRoutesConfig();
-
-        page('*', async (ctx) => await this.loadPage(ctx.path));
+        page("*", (ctx) => this.loadPage(ctx.path));
         page.start();
     }
 
     async loadRoutesConfig() {
         try {
-            const res = await fetch('./routes.json');
+            const res = await fetch(`${location.origin}/routes.json`);
             this.routesConfig = res.ok ? await res.json() : { routes: [] };
         } catch {
             this.routesConfig = { routes: [] };
         }
     }
 
-    getRouteConfig(path) {
-        return this.routesConfig?.routes?.find(r => r.path === path);
+    normalizePath(path) {
+        let p = path.split("?")[0].split("#")[0];
+        p = p.replace(/\/{2,}/g, "/");
+        if (p.length > 1 && p.endsWith("/")) p = p.slice(0, -1);
+        return p || "/";
     }
 
-    getPageNameFromPath(path) {
-        return path === '/' ? 'home' : path.replace(/^\//, '').split('/')[0];
+    getRouteConfig(path) {
+        const p = this.normalizePath(path);
+        return this.routesConfig?.routes?.find(
+            (r) => this.normalizePath(r.path) === p,
+        );
     }
 
     async loadPage(path) {
+        const normalizedPath = this.normalizePath(path);
+        const routeConfig = this.getRouteConfig(normalizedPath);
+
         try {
-            const routeConfig = this.getRouteConfig(path);
-            const pageName = routeConfig?.page || this.getPageNameFromPath(path);
-            const pageData = await this.getPageData(pageName, routeConfig);
+            const pageData = routeConfig
+                ? await this.getPageData(routeConfig)
+                : await this.resolveByConvention(normalizedPath);
 
-            this.seoManager.update(pageData.seo);
-            document.body.innerHTML = pageData.bodyContent;
+            if (!pageData) {
+                this.show404(normalizedPath);
+                return;
+            }
 
-            this.resourceManager.loadStyles(pageData.styles);
-            this.resourceManager.loadScripts(pageData.headScripts, 'head');
-            this.resourceManager.loadScripts(pageData.bodyScripts, 'body');
-
+            this.renderPage(pageData);
         } catch (error) {
-            console.error('Error loading page:', error);
-            this.show404(path);
+            console.error(`Error loading page for "${normalizedPath}":`, error);
+            this.show404(normalizedPath);
         }
     }
 
-    async getPageData(pageName, routeConfig) {
-        if (this.cache.has(pageName)) return this.cache.get(pageName);
+    async resolveByConvention(normalizedPath) {
+        const fileBase =
+            normalizedPath === "/" ? "home" : normalizedPath.slice(1);
 
-        const res = await fetch(`${this.pagesDir}/${pageName}.html`);
-        if (!res.ok) throw new Error(`Page not found: ${pageName}`);
+        for (const ext of this.defaultExtensions) {
+            try {
+                const cached = await this.getCachedHtml(`${fileBase}.${ext}`);
+                return { ...cached, seo: cached.extractedSEO };
+            } catch {}
+        }
+
+        return null;
+    }
+
+    renderPage(pageData) {
+        this.seoManager.update(pageData.seo);
+        document.body.innerHTML = pageData.bodyContent;
+        this.resourceManager.loadStyles(pageData.styles);
+        this.resourceManager.loadScripts(pageData.headScripts, "head");
+        this.resourceManager.loadScripts(pageData.bodyScripts, "body");
+    }
+
+    async getPageData(routeConfig) {
+        const cached = await this.getCachedHtml(routeConfig.page);
+        return {
+            ...cached,
+            seo: routeConfig.seo || cached.extractedSEO,
+        };
+    }
+
+    async getCachedHtml(pageFile) {
+        if (this.htmlCache.has(pageFile)) return this.htmlCache.get(pageFile);
+
+        const res = await fetch(`${this.pagesDir}/${pageFile}`);
+        if (!res.ok) throw new Error(`Page file not found: ${pageFile}`);
 
         const html = await res.text();
-        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        const baseUrl = `${location.origin}${this.pagesDir}/${pageFile}`;
+        this.resolveRelativeUrls(doc, "script[src]", "src", baseUrl);
+        this.resolveRelativeUrls(
+            doc,
+            'link[rel="stylesheet"][href]',
+            "href",
+            baseUrl,
+        );
 
-        const pageData = {
+        const parsed = {
             bodyContent: doc.body.innerHTML,
-            styles: Array.from(doc.head.querySelectorAll('link[rel="stylesheet"], style')),
-            headScripts: Array.from(doc.head.querySelectorAll('script')),
-            bodyScripts: Array.from(doc.body.querySelectorAll('script')),
-            seo: routeConfig?.seo || this.extractSEO(doc.head)
+            styles: Array.from(
+                doc.head.querySelectorAll('link[rel="stylesheet"], style'),
+            ),
+            headScripts: Array.from(doc.head.querySelectorAll("script")),
+            bodyScripts: Array.from(doc.body.querySelectorAll("script")),
+            extractedSEO: this.extractSEO(doc.head),
         };
 
-        this.cache.set(pageName, pageData);
-        return pageData;
+        this.htmlCache.set(pageFile, parsed);
+        return parsed;
+    }
+
+    resolveRelativeUrls(doc, selector, attr, baseUrl) {
+        doc.querySelectorAll(selector).forEach((el) => {
+            const value = el.getAttribute(attr);
+            if (!value) return;
+            if (/^([a-z][a-z0-9+.-]*:)?\/\//i.test(value)) return;
+            if (value.startsWith("/") || value.startsWith("data:")) return;
+
+            el.setAttribute(attr, new URL(value, baseUrl).pathname);
+        });
     }
 
     extractSEO(head) {
         const seo = {
-            title: head.querySelector('title')?.textContent || '',
-            description: head.querySelector('meta[name="description"]')?.content || '',
-            keywords: head.querySelector('meta[name="keywords"]')?.content || '',
-            author: head.querySelector('meta[name="author"]')?.content || '',
-            robots: head.querySelector('meta[name="robots"]')?.content || ''
+            title: head.querySelector("title")?.textContent || "",
+            description:
+                head.querySelector('meta[name="description"]')?.content || "",
+            keywords:
+                head.querySelector('meta[name="keywords"]')?.content || "",
+            author: head.querySelector('meta[name="author"]')?.content || "",
+            robots: head.querySelector('meta[name="robots"]')?.content || "",
         };
 
         const ogTitle = head.querySelector('meta[property="og:title"]');
@@ -95,15 +157,30 @@ class SPARouter {
         return seo;
     }
 
-    show404(path) {
-        document.title = '404 - Page Not Found';
+    async show404(path) {
+        const notFoundRoute = this.getRouteConfig("/404");
+        if (notFoundRoute) {
+            try {
+                const pageData = await this.getPageData(notFoundRoute);
+                this.renderPage(pageData);
+                return;
+            } catch (error) {
+                console.error('Error loading "/404" page:', error);
+            }
+        }
+
+        this.renderFallback404(path);
+    }
+
+    renderFallback404(path) {
+        document.title = "404 - Page Not Found";
         document.body.innerHTML = `
-      <div style="text-align: center; padding: 50px;">
-        <h1>❌ 404 - Page Not Found</h1>
-        <p>Страница <strong>${path}</strong> не существует.</p>
-        <a href="/" onclick="page('/'); return false;">На главную</a>
-      </div>
-    `;
+          <div style="text-align: center; padding: 50px;">
+            <h1>❌ 404 - Page Not Found</h1>
+            <p>Страница <strong>${path}</strong> не существует.</p>
+            <a href="/" onclick="page('/'); return false;">На главную</a>
+          </div>
+        `;
     }
 }
 

@@ -1,5 +1,5 @@
 export const dom = {
-    create(tag, attrs = {}, content = '') {
+    create(tag, attrs = {}, content = "") {
         const el = document.createElement(tag);
         Object.entries(attrs).forEach(([key, value]) => {
             el.setAttribute(key, value);
@@ -9,10 +9,10 @@ export const dom = {
     },
 
     remove(selector) {
-        document.querySelectorAll(selector).forEach(el => el.remove());
+        document.querySelectorAll(selector).forEach((el) => el.remove());
     },
 
     exists(selector) {
         return document.querySelector(selector) !== null;
-    }
+    },
 };

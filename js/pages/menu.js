@@ -14,7 +14,9 @@
             return templateCache.get(menuName);
         }
 
-        const fileName = menuName.endsWith(".html") ? menuName : `${menuName}.html`;
+        const fileName = menuName.endsWith(".html")
+            ? menuName
+            : `${menuName}.html`;
         const response = await fetch(`/menus/${fileName}`);
 
         if (!response.ok) {
@@ -45,7 +47,9 @@
 
             const template = document.createElement("template");
             template.innerHTML = html;
-            const scripts = Array.from(template.content.querySelectorAll("script"));
+            const scripts = Array.from(
+                template.content.querySelectorAll("script"),
+            );
 
             dialog.appendChild(template.content.cloneNode(true));
 
@@ -77,7 +81,6 @@
 
             dialog.showModal();
             activeDialog = dialog;
-
         } catch (error) {
             console.error(error);
         }
