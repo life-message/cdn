@@ -1,5 +1,5 @@
 document.addEventListener("click", function (e) {
-    const btn = e.target.closest("button[data-close]"); // только кнопки
+    const btn = e.target.closest("button[data-close]");
     if (!btn) return;
 
     if (btn.closest("a")) {
