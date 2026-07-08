@@ -101,25 +101,35 @@ class SPARouter {
 
     async loadPage(path) {
         const normalizedPath = this.normalizePath(path);
+        console.log("Loading path:", normalizedPath);
+
         const routeConfig = this.getRouteConfig(normalizedPath);
+        console.log("Route config found:", routeConfig);
 
         try {
             let pageData;
 
             if (routeConfig) {
-                // Получаем параметры из URL
                 const params = this.parseParams(normalizedPath, routeConfig.regex);
+                console.log("Parsed params:", params);
+
                 pageData = await this.getPageData(routeConfig);
-                pageData.params = params; // Добавляем параметры в pageData
+                console.log("Page data loaded:", pageData);
+
+                pageData.params = params;
             } else {
+                console.log("No route config, trying convention...");
                 pageData = await this.resolveByConvention(normalizedPath);
+                console.log("Resolved by convention:", pageData);
             }
 
             if (!pageData) {
+                console.log("No page data found, showing 404");
                 this.show404(normalizedPath);
                 return;
             }
 
+            console.log("Rendering page");
             this.renderPage(pageData);
         } catch (error) {
             console.error(`Error loading page for "${normalizedPath}":`, error);
@@ -196,7 +206,6 @@ class SPARouter {
             if (/^([a-z][a-z0-9+.-]*:)?\/\//i.test(value)) return;
             if (value.startsWith("/") || value.startsWith("data:")) return;
 
-            // ✅ Разрешаем от корня приложения, а не от папки страницы
             const resolvedUrl = new URL(value, `${location.origin}/`).pathname;
 
             el.setAttribute(attr, resolvedUrl);
