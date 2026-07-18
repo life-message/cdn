@@ -1,33 +1,30 @@
-@media (prefers-color-scheme: light) {
-    :root {
-        --button-color: var(--light-lavender);
-        --button-color-text: var(--soft-purple);
-    }
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --button-color: var(--deep-indigo);
-        --button-color-text: var(--soft-purple);
-    }
-
+:root{
+      color-scheme: light dark;
+      --default-button-color: light-dark(var(--light-lavender), var(--deep-indigo));
+      --default-button-color-text: light-dark(var(--soft-purple), var(--soft-purple));
+      --default-button-padding: var(--padding);
+      --default-button-border-radius:  var(--border-radius);
+      --default-button-border: var(--border);
+      --default-button-border-color: var(--border-color);
+      --default-button-border-color-active: var(--border-color-active);
 }
 
 button,
-a:not(:has(i)) {
+a {
+    border-radius: var(--default-button-border-radius);
+    padding: var(--button-padding, var(--default-button-padding));
+    background-color: var(--button-color, var(--default-button-color));
+    color: var(--button-color-text, var(--default-button-color-text));
+
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     font-weight: bold;
     text-align: center;
-    border-radius: var(--border-radius);
-    padding: var(--padding);
-    background-color: var(--button-color);
-    color: var(--button-color-text);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     border: none;
-    box-shadow: inset 0 0 0 var(--border) var(--border-color);
+    box-shadow: inset 0 0 0 var(--button-border, var(--default-button-border)) var(--button-border-color, var(--default-button-border-color));
     cursor: pointer;
     font-size: clamp(0.875rem, 3vw, 1rem);
     transition:
@@ -36,19 +33,19 @@ a:not(:has(i)) {
 }
 
 button *,
-a:not(:has(i))>* {
-    color: var(--button-color-text) !important;
+a * {
+    color: var(--button-color-text, var(--default-button-color-text)) !important;
 }
 
 button.active,
 a.active:not(:has(i)) {
-    box-shadow: inset 0 0 0 calc(var(--border)*1.5) var(--border-color-active);
+    box-shadow: inset 0 0 0 calc(var(--default-button-border)*1.5) var(--default-button-border-color-active);
 
 }
 
 button:hover,
 a:not(:has(i)):hover {
-    box-shadow: inset 0 0 0 var(--border) var(--border-color-active);
+    box-shadow: inset 0 0 0 var(--default-button-border) var(--border-color-active);
 }
 
 button:active,
