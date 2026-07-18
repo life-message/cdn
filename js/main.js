@@ -3,7 +3,7 @@ import "./pages/templates.js";
 import notification from "./notification.js";
 import { initNavigation } from "./ui/header.js";
 import "./ui/color.js";
-import "./utils/field-sync.js";
+import "./utils/localstorage.js";
 
 globalThis.notification = notification;
 
