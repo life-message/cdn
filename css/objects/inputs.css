@@ -1,35 +1,45 @@
 :root {
     color-scheme: light dark;
-    --input-placeholder: light-dark(var(--light-lavender), var(--deep-indigo));
-    --input-border-color: light-dark(var(--pale-mauve), var(--dark-plum));
+    --default-input-font-size: var(--h4);
 
-    --input-border-color-active: var(--soft-purple);
+    --default-input-color: light-dark(var(--white), var(--dark));
+    --default-input-color-text: light-dark(var(--accent), var(--accent));
+    --default-input-color-placeholder: light-dark(var(--lightest), var(--accent));
+
+    --default-input-padding: var(--padding);
+    --default-input-border-radius:  var(--border-radius);
+
+    --default-input-border: var(--border);
+    --default-input-border-color: var(--border-color);
+    --default-input-border-color-active: var(--border-color-active);
 }
 
 input {
-    border-radius: var(--border-radius);
-    padding: var(--padding);
-    background-color: var(--input);
-    color: var(--text-color);
+    font-size: var(--input-font-size, var(--default-input-font-size));
+    color: var(--input-color-text, var(--default-input-color-text));
+
+    padding: var(--input-padding, var(--default-input-padding));
+
     border: none;
-    box-shadow: inset 0 0 0 var(--border) var(--input-border-color);
-    font-size: var(--h4);
+    border-radius: var(--default-input-border-radius);
+    box-shadow: inset 0 0 0 var(--default-input-border) var(--default-input-border-color);
     box-sizing: border-box;
+    background-color: var(--default-input-color);
     transition: 150ms ease;
 }
 
 input:focus {
     outline: none;
-    box-shadow: inset 0 0 0 var(--border) var(--input-border-color-active);
+    box-shadow: inset 0 0 0 var(--default-input-border) var(--default-input-border-color-active);
 }
 
 input::placeholder {
-    color: var(--input-placeholder);
+    color: var(--default-input-color-placeholder);
     font-size: var(--h4);
 }
 
 input[type="checkbox"] {
-    accent-color: var(--input-border-color-active);
+    accent-color: var(--default-input-border-color-active);
     cursor: pointer;
     width: 1.25rem;
     height: 1.25rem;

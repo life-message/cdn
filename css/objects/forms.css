@@ -8,3 +8,8 @@ form {
 form button[type="submit"] {
     width: 100%;
 }
+
+form nav>input {
+    width: 100%;
+
+}

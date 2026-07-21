@@ -1,0 +1,27 @@
+*[class^='iconoir-'],
+*[class*=' iconoir-'] {
+    display: flex !important;
+    flex-direction: row;
+    gap: var(--gap);
+    align-items: center;
+    font-size: 1.225em;
+}
+
+*[class^='iconoir-']::before,
+*[class*=' iconoir-']::before {
+    width: 1.250em !important;
+    height: 1.250em !important;
+}
+
+h1>i>*,
+h2>i>*,
+h3>i>*,
+h4>i>*,
+h5>i>*,
+h6>i>* {
+    color: var(--accent);
+}
+
+h1:has(>i:first-child) {
+    gap: calc(var(--gap)*2)
+}

@@ -1,16 +1,3 @@
-@media (min-width: 1440px) {
-    body>main {
-        width: 1440px;
-        padding: 0;
-    }
-}
-
-div {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap);
-}
-
 section {
     display: flex;
     flex-direction: column;
@@ -20,34 +7,34 @@ section {
     box-sizing: border-box;
 }
 
-section>header:first-of-type {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-section>header:has(h2) {
-    margin-bottom: 40px;
-}
-
-section>header:has(h3, h4) {
-    margin-bottom: 20px;
-}
-
 html>body>section {
     width: auto !important;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center;
     gap: 40px;
+    min-width: 500px;
+}
+
+div {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
 }
 
 nav {
     display: flex;
     gap: var(--gap);
     align-items: center;
+    justify-content: space-between;
+}
+
+menu {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--gap);
 }
 
 @media (max-width: 768px) {

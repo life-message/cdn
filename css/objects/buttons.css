@@ -1,35 +1,54 @@
-:root{
-      color-scheme: light dark;
-      --default-button-color: light-dark(var(--light-lavender), var(--deep-indigo));
-      --default-button-color-text: light-dark(var(--soft-purple), var(--soft-purple));
-      --default-button-padding: var(--padding);
-      --default-button-border-radius:  var(--border-radius);
-      --default-button-border: var(--border);
-      --default-button-border-color: var(--border-color);
-      --default-button-border-color-active: var(--border-color-active);
+:root {
+    color-scheme: light dark;
+
+    --default-button-font-size: var(--h5);
+
+    --default-button-color: light-dark(var(--lightest), var(--dark));
+    --default-button-color-text: light-dark(var(--accent), var(--accent));
+
+    --default-button-padding: var(--padding);
+    --default-button-border-radius: var(--border-radius);
+
+    --default-button-border: var(--border);
+    --default-button-border-color: var(--border-color);
+    --default-button-border-color-active: var(--border-color-active);
 }
 
 button,
 a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
     border-radius: var(--default-button-border-radius);
     padding: var(--button-padding, var(--default-button-padding));
     background-color: var(--button-color, var(--default-button-color));
     color: var(--button-color-text, var(--default-button-color-text));
 
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    cursor: pointer;
+
+    font-size: var(--button-font-size, var(--default-button-font-size));
     font-weight: bold;
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+
     border: none;
     box-shadow: inset 0 0 0 var(--button-border, var(--default-button-border)) var(--button-border-color, var(--default-button-border-color));
-    cursor: pointer;
-    font-size: clamp(0.875rem, 3vw, 1rem);
     transition:
         transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
         box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:has(>span),
+a:has(>span) {
+    background: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+button:has(>span):hover,
+a:has(>span):hover {
+    box-shadow: none
 }
 
 button *,
@@ -38,7 +57,7 @@ a * {
 }
 
 button.active,
-a.active:not(:has(i)) {
+a.active {
     box-shadow: inset 0 0 0 calc(var(--default-button-border)*1.5) var(--default-button-border-color-active);
 
 }
@@ -49,7 +68,7 @@ a:not(:has(i)):hover {
 }
 
 button:active,
-a:not(:has(i)):active {
+a::active {
     transition: 200ms;
     box-shadow: none;
 }
@@ -77,20 +96,4 @@ button[class^='iconoir-'] {
 
 button[class^='iconoir-']>* {
     color: var(--button-color-text);
-}
-
-button:has(> i:only-child) {
-    background: transparent;
-    box-shadow: none;
-    padding: 0;
-    font-size: var(--h4);
-}
-
-
-
-@media (min-width: 768px) {
-    a.hidden-text {
-        text-indent: -9999px;
-        gap: 0;
-    }
 }
