@@ -1,28 +1,29 @@
 :root {
+    color-scheme: light dark;
     --hue-offset: 0deg;
     filter: hue-rotate(var(--hue-offset));
-    --light-lavender: #E9E6ED;
-    --pale-mauve-rgb: 205, 188, 226;
-    --pale-mauve: rgba(var(--pale-mauve-rgb), 1);
-    --soft-purple: #AF99CC;
-    --dark-plum: #272131;
-    --deep-indigo: #221e2a;
-    --deep-navy: #191520;
 
     --white: #F1F1F1;
-    --red: #ee5449;
-    --red-soft: #ee544942;
-    --green: #4caf50;
-    --accent: var(--soft-purple);
+    --lightest: #E9E6ED;
+    --pale-rgb: 205, 188, 226;
+    --pale: rgba(var(--pale-rgb), 1);
+    --accent: #AF99CC;
+    --dark-muted: #272131;
+    --dark: #221e2a;
+    --darkets: #191520;
 
     --max-width: 1440px;
     --vh: 100dvh;
 
-    --text-color: var(--deep-navy);
-    --text-color-adaptive: var(--soft-purple);
+    --text-color: light-dark(var(--deep-navy), var(--light-lavender));
+    --text-color-adaptive: var(--accent);
+
+    --background-color: light-dark(var(--white), var(--dark));
 
     --border: 2px;
     --border-radius: 12px;
+    --border-color: light-dark(var(--pale),var(--dark));
+    --border-color-active: light-dark(var(--accent),var(--dark));
 
     --gap: 10px;
     --padding: 8px;
@@ -33,44 +34,11 @@
     --h3: clamp(1.125rem, 4.5vw, 1.5rem);
     --h4: clamp(1rem, 4vw, 1.25rem);
     --h5: clamp(0.875rem, 3vw, 1rem);
-    --h6: clamp(0.75rem, 2.5vw, 0.875rem);
+    --h6: clamp(0.75rem, 2.5vw, 0.75rem);
     --p: clamp(0.875rem, 3vw, 1rem);
 }
 
-@media (prefers-color-scheme: light) {
-    :root {
-        --text-color: var(--deep-navy);
-
-        --background: var(--white);
-        --icon-color: var(--soft-purple);
-
-        --chip-background: rgba(var(--pale-mauve-rgb), 0.6);
-        --chip-color: var(--soft-purple);
-
-        --border-color: var(--pale-mauve);
-        --border-color-active: var(--soft-purple);
-    }
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: var(--deep-navy);
-        --icon-color: rgba(var(--pale-mauve-rgb), 1);
-
-        --border-color: var(--deep-indigo);
-        --border-color-active: var(--dark-plum);
-
-        --text-color: var(--light-lavender);
-
-    }
-
-}
-
 [data-hue-adaptive] {
-    background-color: var](--base-theme-color);
+    background-color: var(--base-theme-color);
     filter: hue-rotate(calc(var(--hue-target, 0deg) - var(--hue-offset)));
-}
-
-.adaptive {
-    color: var(--accent);
 }
