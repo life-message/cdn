@@ -8,7 +8,7 @@ html>body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--background);
+    background-color: var(--background-color);
     gap: 60px;
 }
 

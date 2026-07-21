@@ -1,0 +1,6 @@
+@media (min-width: 1440px) {
+    body > main {
+        width: 1440px;
+        padding: 0;
+    }
+}

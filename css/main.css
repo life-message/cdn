@@ -1,9 +1,9 @@
 @import url("variables.css");
 @import url("fonts.css");
-@import url("sections.css");
 @import url("notifications.css");
 @import url("ui-enhancements.css");
-@import url("layout/layout.css");
+
+@import url("layout/_index.css");
 @import url("objects/_index.css");
 
 * {
@@ -12,4 +12,5 @@
     font-family: "Google Sans", "Montserrat", sans-serif;
     font-optical-sizing: auto;
     font-style: normal;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
