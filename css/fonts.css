@@ -1,3 +1,10 @@
+:root{
+    --default-chip-color: var(--pale);
+    --default-chip-padding: calc(var(--padding) / 2) calc(var(--padding) / 1.33);
+    --default-chip-border-radius: var(--border-radius);
+    --default-chip-color-text: var(--accent);
+}
+
 h1 {
     font-size: var(--h1);
 }
@@ -34,26 +41,6 @@ h5,
 h6,
 p {
     color: var(--text-color);
-}
-
-h2.title {
-    margin-bottom: 40px;
-}
-
-h3.title {
-    margin-bottom: 30px;
-}
-
-h1.placeholder,
-h2.placeholder,
-h3.placeholder,
-h4.placeholder,
-h5.placeholder,
-h6.placeholder,
-p.placeholder {
-    width: auto;
-    padding: 0;
-    color: var(--border) !important;
 }
 
 h1.accent,
