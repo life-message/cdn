@@ -1,15 +1,15 @@
 import { spa } from "./spa.js"
 
-function replaceSvg() {
+async function replaceSvg() {
   const images = document.querySelectorAll('img[alt*="svg"]');
 
   for (const img of images) {
     try {
-      const response = fetch(img.src);
+      const response = await fetch(img.src);
 
       if (!response.ok) throw new Error('Ошибка загрузки файла');
 
-      const svgText = response.text();
+      const svgText = await response.text();
 
       const parser = new DOMParser();
       const doc = parser.parseFromString(svgText, 'image/svg+xml');
