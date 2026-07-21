@@ -66,63 +66,10 @@ p.accent {
     color: var(--accent);
 }
 
-@media (prefers-color-scheme: light) {
-    :root {
-        --code-color: var(--soft-purple);
-        --code-color-bg: var(--light-lavender);
-    }
+h6:has(>span) {
+    background-color: var(--chip-color, var(--default-chip-color));
+    padding: var(--chip-padding, var(--default-chip-padding));
+    border-radius: var(--chip-border-radius, var(--default-chip-border-radius));
+    color: var(--chip-color-text, var(--default-chip-color-text));
+    text-align: center;
 }
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --code-color: var(--soft-purple);
-        --code-color-bg: var(--deep-indigo);
-    }
-
-}
-
-:not(pre)>code {
-    font-family: 'Myna', 'Ubuntu Mono', monospace !important;
-    border-radius: 4px;
-    background-color: var(--code-color-bg);
-    font-size: var(--h4);
-    color: var(--code-color);
-    font-weight: 600;
-    padding: 4px 6px;
-    display: inline-block;
-}
-
-/* код */
-
-pre>code {
-    border-radius: var(--br);
-    font-family: 'Myna', 'Ubuntu Mono', monospace !important;
-    font-size: 14px !important;
-    line-height: 1.2;
-}
-
-@media (max-width: 768px) {
-    pre>code {
-        font-size: 12px !important;
-    }
-}
-
-.code-block>pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    width: 100%;
-}
-
-code>span {
-    font-family: Myna, monospace;
-}
-
-@font-face {
-    font-family: 'Myna';
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-/*  */
