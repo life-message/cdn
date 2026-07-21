@@ -4,12 +4,12 @@
     filter: hue-rotate(var(--hue-offset));
 
     --white: #F1F1F1;
-    --lightest: #E9E6ED;
-    --pale-rgb: 205, 188, 226;
+    --lightest: #E8E6ED;
+    --pale-rgb: 201, 188, 226;
     --pale: rgba(var(--pale-rgb), 1);
-    --accent: #AF99CC;
-    --dark-muted: #272131;
-    --dark: #221e2a;
+    --accent: #AA99CC;
+    --dark-muted: #262131;
+    --dark: #221E2A;
     --darkets: #191520;
 
     --max-width: 1440px;
@@ -22,8 +22,8 @@
 
     --border: 2px;
     --border-radius: 12px;
-    --border-color: light-dark(var(--pale),var(--dark));
-    --border-color-active: light-dark(var(--accent),var(--dark));
+    --border-color: light-dark(var(--pale), var(--dark));
+    --border-color-active: light-dark(var(--accent), var(--dark));
 
     --gap: 10px;
     --padding: 8px;
