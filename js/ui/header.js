@@ -1,32 +1,15 @@
+import { watchDom } from "../utils/watch.js";
+
 export function initNavigation() {
+  watchDom("nav", (nav) => {
     const path = window.location.pathname;
 
-    function processNav() {
-        const nav = document.querySelector("nav");
-        if (!nav) return false;
-
-        let found = false;
-        nav.querySelectorAll("a").forEach((a) => {
-            const href = a.getAttribute("href");
-            if (href === path || (path === "/" && href === "/")) {
-                a.classList.add("active");
-                a.classList.add("hidden-text");
-                a.removeAttribute("href");
-                a.style.pointerEvents = "none";
-                found = true;
-            }
-        });
-
-        return found;
-    }
-
-    if (processNav()) return;
-
-    const observer = new MutationObserver(() => {
-        if (processNav()) {
-            observer.disconnect();
-        }
+    nav.querySelectorAll("a").forEach((a) => {
+      if (a.getAttribute("href") === path) {
+        a.classList.add("active", "hidden-text");
+        a.removeAttribute("href");
+        a.style.pointerEvents = "none";
+      }
     });
-
-    observer.observe(document.body, { childList: true, subtree: true });
+  });
 }

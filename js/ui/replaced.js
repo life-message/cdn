@@ -1,63 +1,41 @@
-function initSwitchers(attrName = "data-replaced") {
-    const buttons = document.querySelectorAll(`button[${attrName}]`);
-    const containers = new Set();
+import { watchDom } from "../utils/watch.js";
 
+const ATTR = "data-replaced";
+
+function initContainer(container) {
+  if (container.dataset.switcherInited) return;
+  container.dataset.switcherInited = "true";
+
+  const buttons = container.querySelectorAll(`button[${ATTR}]`);
+  const targets = container.querySelectorAll(`[${ATTR}]:not(button)`);
+
+  function switchTo(value) {
     buttons.forEach((btn) => {
-        const container =
-            btn.closest("[data-switcher]") ||
-            btn.closest("form") ||
-            btn.closest("body");
-        containers.add(container);
+      btn.classList.toggle("active", btn.getAttribute(ATTR) === value);
     });
 
-    containers.forEach((container) => {
-        if (container.dataset.switcherInited) return;
-        container.dataset.switcherInited = "true";
-
-        const switchButtons = container.querySelectorAll(`button[${attrName}]`);
-        const targets = container.querySelectorAll(`[${attrName}]:not(button)`);
-
-        function switchTo(value) {
-            switchButtons.forEach((btn) => {
-                btn.classList.toggle(
-                    "active",
-                    btn.getAttribute(attrName) === value,
-                );
-            });
-
-            targets.forEach((target) => {
-                const isVisible = target.getAttribute(attrName) === value;
-                target.hidden = !isVisible;
-
-                target
-                    .querySelectorAll("input, textarea, select")
-                    .forEach((field) => {
-                        field.disabled = !isVisible;
-                    });
-            });
-        }
-
-        switchButtons.forEach((btn) => {
-            btn.addEventListener("click", () =>
-                switchTo(btn.getAttribute(attrName)),
-            );
-        });
-
-        if (switchButtons.length) {
-            const visibleTarget = Array.from(targets).find((t) => !t.hidden);
-            const defaultValue = visibleTarget
-                ? visibleTarget.getAttribute(attrName)
-                : switchButtons[0].getAttribute(attrName);
-
-            switchTo(defaultValue);
-        }
+    targets.forEach((target) => {
+      const isVisible = target.getAttribute(ATTR) === value;
+      target.hidden = !isVisible;
+      target.querySelectorAll("input, textarea, select").forEach((field) => {
+        field.disabled = !isVisible;
+      });
     });
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => switchTo(btn.getAttribute(ATTR)));
+  });
+
+  const visibleTarget = Array.from(targets).find((t) => !t.hidden);
+  const defaultValue = visibleTarget
+    ? visibleTarget.getAttribute(ATTR)
+    : buttons[0]?.getAttribute(ATTR);
+
+  if (defaultValue) switchTo(defaultValue);
 }
 
-const observer = new MutationObserver(() => {
-    initSwitchers();
+watchDom(`button[${ATTR}]`, (btn) => {
+  const container = btn.closest("[data-switcher]") || btn.closest("form") || document.body;
+  initContainer(container);
 });
-
-observer.observe(document.body, { childList: true, subtree: true });
-
-initSwitchers();

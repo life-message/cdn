@@ -1,97 +1,48 @@
+import { watchDom } from "../utils/watch.js";
+
 const HUE_KEY = "color";
 
-const updateActiveState = (deg) => {
-    const currentDeg = parseInt(deg, 10);
-    document.querySelectorAll("[data-hue-adaptive]").forEach((btn) => {
-        const btnDeg = parseInt(btn.dataset.hueAdaptive, 10);
-        if (btnDeg === currentDeg) {
-            btn.classList.add("active");
-        } else {
-            btn.classList.remove("active");
-        }
-    });
+const getHue = () => parseInt(localStorage.getItem(HUE_KEY) || "0", 10);
+
+const syncButton = (btn, hue) => {
+  if (!btn.style.getPropertyValue("--hue-target")) {
+    btn.style.setProperty("--hue-target", `${btn.dataset.hueAdaptive}deg`);
+  }
+  btn.classList.toggle("active", parseInt(btn.dataset.hueAdaptive, 10) === hue);
+};
+
+const syncAllButtons = () => {
+  const hue = getHue();
+  document.querySelectorAll("[data-hue-adaptive]").forEach((btn) => syncButton(btn, hue));
 };
 
 const setHue = (deg) => {
-    document.documentElement.style.setProperty("--hue-offset", `${deg}deg`);
-    localStorage.setItem(HUE_KEY, deg);
-    updateActiveState(deg);
+  document.documentElement.style.setProperty("--hue-offset", `${deg}deg`);
+  localStorage.setItem(HUE_KEY, deg);
+  syncAllButtons();
 };
 
-const getHue = () => {
-    const saved = localStorage.getItem(HUE_KEY);
-    return saved ? parseInt(saved, 10) : 0;
-};
-
-const processHueButtons = (elements) => {
-    const currentDeg = getHue();
-    elements.forEach((btn) => {
-        if (!btn.style.getPropertyValue("--hue-target")) {
-            const targetDeg = btn.dataset.hueAdaptive;
-            btn.style.setProperty("--hue-target", `${targetDeg}deg`);
-        }
-        const btnDeg = parseInt(btn.dataset.hueAdaptive, 10);
-        if (btnDeg === currentDeg) {
-            btn.classList.add("active");
-        } else {
-            btn.classList.remove("active");
-        }
-    });
-};
-
-const initHueButtons = () => {
-    const buttons = document.querySelectorAll("[data-hue-adaptive]");
-    processHueButtons(buttons);
-};
-
-const hueObserver = new MutationObserver((mutations) => {
-    let newButtons = [];
-
-    mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
-            if (node.nodeType === 1) {
-                if (node.matches("[data-hue-adaptive]")) {
-                    newButtons.push(node);
-                }
-                const descendants = node.querySelectorAll(
-                    "[data-hue-adaptive]",
-                );
-                if (descendants.length > 0) {
-                    newButtons = newButtons.concat(Array.from(descendants));
-                }
-            }
-        });
-    });
-
-    if (newButtons.length > 0) {
-        processHueButtons(newButtons);
-    }
-});
+// Подсвечиваем кнопки по мере их появления в DOM (в т.ч. после SPA-навигации)
+watchDom("[data-hue-adaptive]", (btn) => syncButton(btn, getHue()));
 
 document.addEventListener("DOMContentLoaded", () => {
-    const hue = getHue();
-    setHue(hue);
-    initHueButtons();
+  setHue(getHue());
 
-    hueObserver.observe(document.body, { childList: true, subtree: true });
-
-    const slider = document.getElementById("hue-slider");
-    if (slider) {
-        slider.value = hue;
-        slider.addEventListener("input", (e) => {
-            setHue(e.target.value);
-        });
-    }
-
-    document.addEventListener("click", (e) => {
-        const btn = e.target.closest("[data-hue-adaptive]");
-        if (btn) {
-            const targetDeg = btn.dataset.hueAdaptive;
-            setHue(targetDeg);
-            const currentSlider = document.getElementById("hue-slider");
-            if (currentSlider) currentSlider.value = targetDeg;
-        }
-    });
+  const slider = document.getElementById("hue-slider");
+  if (slider) {
+    slider.value = getHue();
+    slider.addEventListener("input", (e) => setHue(e.target.value));
+  }
 });
 
-document.addEventListener("hue:refresh", initHueButtons);
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-hue-adaptive]");
+  if (!btn) return;
+
+  setHue(btn.dataset.hueAdaptive);
+
+  const slider = document.getElementById("hue-slider");
+  if (slider) slider.value = btn.dataset.hueAdaptive;
+});
+
+document.addEventListener("hue:refresh", syncAllButtons);

@@ -1,105 +1,71 @@
-(() => {
-  const templateCache = new Map();
-  let activeDialog = null;
+import { fetchTextCached } from "./dom.js";
 
-  function closeMenu() {
-    if (!activeDialog) return;
+let activeDialog = null;
 
-    activeDialog.close();
-    activeDialog = null;
+function closeMenu() {
+  activeDialog?.close();
+  activeDialog = null;
+}
+
+function buildDialog(menuName, html) {
+  const dialog = document.createElement("dialog");
+  dialog.dataset.menuName = menuName;
+
+  const template = document.createElement("template");
+  template.innerHTML = html;
+  const scripts = Array.from(template.content.querySelectorAll("script"));
+
+  dialog.appendChild(template.content.cloneNode(true));
+
+  // Скрипты, вставленные через innerHTML, не выполняются — пересоздаём их
+  for (const sourceScript of scripts) {
+    const runnableScript = document.createElement("script");
+    for (const { name, value } of sourceScript.attributes) {
+      runnableScript.setAttribute(name, value);
+    }
+    runnableScript.textContent = sourceScript.textContent;
+    dialog.appendChild(runnableScript);
   }
 
-  async function loadMenuTemplate(menuName) {
-    if (templateCache.has(menuName)) {
-      return templateCache.get(menuName);
-    }
-
-    const fileName = menuName.endsWith(".html")
-      ? menuName
-      : `${menuName}.html`;
-    const response = await fetch(`/menus/${fileName}`);
-
-    if (!response.ok) {
-      throw new Error(`Не удалось загрузить меню: ${menuName}`);
-    }
-
-    const html = await response.text();
-    templateCache.set(menuName, html);
-    return html;
-  }
-
-  async function openMenu(menuName) {
-    if (!menuName) return;
-
-    if (activeDialog && activeDialog.dataset.menuName === menuName) {
-      return;
-    }
-
-    if (activeDialog) {
-      closeMenu();
-    }
-
-    try {
-      const html = await loadMenuTemplate(menuName);
-
-      const dialog = document.createElement("dialog");
-      dialog.dataset.menuName = menuName;
-
-      const template = document.createElement("template");
-      template.innerHTML = html;
-      const scripts = Array.from(
-        template.content.querySelectorAll("script"),
-      );
-
-      dialog.appendChild(template.content.cloneNode(true));
-
-      for (const sourceScript of scripts) {
-        const runnableScript = document.createElement("script");
-        for (const { name, value } of sourceScript.attributes) {
-          runnableScript.setAttribute(name, value);
-        }
-        if (sourceScript.textContent) {
-          runnableScript.textContent = sourceScript.textContent;
-        }
-        dialog.appendChild(runnableScript);
-      }
-
-      document.body.appendChild(dialog);
-
-      dialog.addEventListener("close", () => {
-        dialog.remove();
-        if (activeDialog === dialog) {
-          activeDialog = null;
-        }
-      });
-
-      dialog.addEventListener("click", (event) => {
-        if (event.target === dialog) {
-          closeMenu();
-        }
-      });
-
-      dialog.showModal();
-      activeDialog = dialog;
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  document.addEventListener("click", (event) => {
-    const target = event.target;
-
-    const closeTrigger = target.closest("[close='true']");
-    if (closeTrigger) {
-      closeMenu();
-      return;
-    }
-
-    const openTrigger = target.closest("[menu]");
-    if (openTrigger) {
-      event.preventDefault();
-      const menuName = openTrigger.getAttribute("menu");
-      openMenu(menuName);
-    }
+  dialog.addEventListener("close", () => {
+    dialog.remove();
+    if (activeDialog === dialog) activeDialog = null;
   });
-})();
+
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) closeMenu();
+  });
+
+  return dialog;
+}
+
+async function openMenu(menuName) {
+  if (!menuName || activeDialog?.dataset.menuName === menuName) return;
+  closeMenu();
+
+  try {
+    const fileName = menuName.endsWith(".html") ? menuName : `${menuName}.html`;
+    const html = await fetchTextCached(`/menus/${fileName}`);
+    const dialog = buildDialog(menuName, html);
+
+    document.body.appendChild(dialog);
+    dialog.showModal();
+    activeDialog = dialog;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+document.addEventListener("click", (event) => {
+  const closeTrigger = event.target.closest("[close='true']");
+  if (closeTrigger) {
+    closeMenu();
+    return;
+  }
+
+  const openTrigger = event.target.closest("[menu]");
+  if (openTrigger) {
+    event.preventDefault();
+    openMenu(openTrigger.getAttribute("menu"));
+  }
+});

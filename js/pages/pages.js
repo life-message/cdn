@@ -42,14 +42,14 @@ class SPARouter {
 
       const regexPattern = pattern
         .replace(/\{(\w+)\}/g, "(?<$1>[^/]+)")
-        .replace(/\//g, "\\/")
-        .replace(/\\\//g, "\\/");
+        .replace(/\//g, "\\/");
 
       const regex = new RegExp(`^${regexPattern}$`);
 
       return {
         ...route,
         originalPath: pattern,
+        normalizedPath: this.normalizePath(pattern),
         regex,
         paramNames,
       };
@@ -71,48 +71,35 @@ class SPARouter {
 
   getRouteConfig(path) {
     const p = this.normalizePath(path);
-    let route = this.routes.find((r) => this.normalizePath(r.originalPath) === p);
-    if (!route) {
-      route = this.routes.find((r) => r.regex.test(p));
-    }
-
-    return route;
+    return (
+      this.routes.find((r) => r.normalizedPath === p) ||
+      this.routes.find((r) => r.regex.test(p))
+    );
   }
 
   async loadPage(path) {
     const normalizedPath = this.normalizePath(path);
-    console.log("Loading path:", normalizedPath);
-
     const routeConfig = this.getRouteConfig(normalizedPath);
-    console.log("Route config found:", routeConfig);
 
     try {
       let pageData;
 
       if (routeConfig) {
         const params = this.parseParams(normalizedPath, routeConfig.regex);
-        console.log("Parsed params:", params);
-
         pageData = await this.getPageData(routeConfig);
-        console.log("Page data loaded:", pageData);
-
         pageData.params = params;
       } else {
-        console.log("No route config, trying convention...");
         pageData = await this.resolveByConvention(normalizedPath);
-        console.log("Resolved by convention:", pageData);
       }
 
       if (!pageData) {
-        console.log("No page data found, showing 404");
         this.show404(normalizedPath);
         return;
       }
 
-      console.log("Rendering page");
       this.renderPage(pageData);
     } catch (error) {
-      console.error(`Error loading page for "${normalizedPath}":`, error);
+      console.error(`Ошибка загрузки страницы "${normalizedPath}":`, error);
       this.show404(normalizedPath);
     }
   }

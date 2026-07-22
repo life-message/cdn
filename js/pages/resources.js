@@ -2,75 +2,43 @@ import { dom } from "./dom.js";
 
 export class ResourceManager {
   constructor() {
-    this.loadedResources = new Set();
+    this.loaded = new Set();
   }
 
   loadStyles(styles) {
-    const currentStyleIds = new Set();
+    const currentIds = new Set();
 
     styles.forEach((styleEl) => {
       const id = this.getResourceId(styleEl);
-      currentStyleIds.add(id);
-      if (styleEl.tagName === "LINK") {
-        const href = styleEl.getAttribute("href");
-        if (
-          dom.exists(
-            `link[href="${href}"][data-spa-resource="style"]`,
-          )
-        ) {
-          return;
-        }
-      } else if (styleEl.tagName === "STYLE") {
-        if (
-          dom.exists(
-            `style[data-resource-id="${id}"][data-spa-resource="style"]`,
-          )
-        ) {
-          return;
-        }
-      }
+      currentIds.add(id);
+      if (this.loaded.has(id)) return;
 
-      if (styleEl.tagName === "LINK") {
-        const href = styleEl.getAttribute("href");
-        const link = dom.create("link", {
-          rel: "stylesheet",
-          href: href,
-          "data-spa-resource": "style",
-          "data-resource-id": id,
-        });
-        document.head.appendChild(link);
-      } else if (styleEl.tagName === "STYLE") {
-        const style = dom.create(
-          "style",
-          {
-            "data-spa-resource": "style",
-            "data-resource-id": id,
-          },
-          styleEl.textContent,
-        );
-        document.head.appendChild(style);
-      }
+      const attrs = { "data-spa-resource": "style", "data-resource-id": id };
+      const el =
+        styleEl.tagName === "LINK"
+          ? dom.create("link", { rel: "stylesheet", href: styleEl.getAttribute("href"), ...attrs })
+          : dom.create("style", attrs, styleEl.textContent);
 
-      this.loadedResources.add(id);
+      document.head.appendChild(el);
+      this.loaded.add(id);
     });
 
-    document
-      .querySelectorAll('[data-spa-resource="style"]')
-      .forEach((el) => {
-        const resourceId = el.getAttribute("data-resource-id");
-        if (!currentStyleIds.has(resourceId)) {
-          el.remove();
-        }
-      });
+    // Убираем стили прошлой страницы, которых больше нет в текущей
+    document.querySelectorAll('[data-spa-resource="style"]').forEach((el) => {
+      const id = el.getAttribute("data-resource-id");
+      if (!currentIds.has(id)) {
+        el.remove();
+        this.loaded.delete(id);
+      }
+    });
   }
 
   loadScripts(scripts, target = "head") {
     scripts.forEach((oldScript) => {
       const id = this.getResourceId(oldScript);
+      if (this.loaded.has(id)) return;
 
-      if (this.loadedResources.has(id)) return;
-
-      const newScript = dom.create("script");
+      const newScript = dom.create("script", {}, "");
       Array.from(oldScript.attributes).forEach((attr) => {
         newScript.setAttribute(attr.name, attr.value);
       });
@@ -80,27 +48,23 @@ export class ResourceManager {
 
       if (newScript.src) newScript.async = false;
 
-      (target === "head" ? document.head : document.body).appendChild(
-        newScript,
-      );
-      this.loadedResources.add(id);
+      (target === "head" ? document.head : document.body).appendChild(newScript);
+      this.loaded.add(id);
     });
   }
+
   getResourceId(element) {
     if (element.src) return `script:${element.src}`;
     if (element.href) return `link:${element.href}`;
-    if (element.textContent) {
-      return `inline:${this.simpleHash(element.textContent)}`;
-    }
+    if (element.textContent) return `inline:${this.simpleHash(element.textContent)}`;
     return `unknown:${Math.random()}`;
   }
 
   simpleHash(str) {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-      hash = hash & hash;
+      hash = (hash << 5) - hash + str.charCodeAt(i);
+      hash |= 0;
     }
     return hash.toString(36);
   }

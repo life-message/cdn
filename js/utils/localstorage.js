@@ -1,3 +1,5 @@
+import { watchDom } from "./watch.js";
+
 class LocalStorageFieldManager {
   constructor() {
     this.fieldsToRecords = new Map();
@@ -7,9 +9,7 @@ class LocalStorageFieldManager {
   }
 
   init() {
-    this.registerExistingFields();
-    this.applyAllFields();
-    this.setupMutationObserver();
+    this.setupWatcher();
 
     window.addEventListener("storage", (event) => {
       if (event.key !== null) {
@@ -101,10 +101,6 @@ class LocalStorageFieldManager {
         this.applyField(fieldName);
       }
     });
-  }
-
-  registerExistingFields(root = document) {
-    root.querySelectorAll("[data-storage]").forEach((el) => this.registerElement(el));
   }
 
   registerElement(element) {
@@ -266,35 +262,12 @@ class LocalStorageFieldManager {
     });
   }
 
-  setupMutationObserver() {
-    const observer = new MutationObserver((mutations) => {
-      let foundNew = false;
-
-      for (const mutation of mutations) {
-        mutation.addedNodes.forEach((node) => {
-          if (node.nodeType !== Node.ELEMENT_NODE) return;
-
-          if (node.hasAttribute?.("data-storage") && !this.elementToRecord.has(node)) {
-            this.registerElement(node);
-            foundNew = true;
-          }
-
-          node.querySelectorAll?.("[data-storage]").forEach((el) => {
-            if (!this.elementToRecord.has(el)) {
-              this.registerElement(el);
-              foundNew = true;
-            }
-          });
-        });
-      }
-      if (foundNew) {
-        this.applyAllFields();
-      }
+  setupWatcher() {
+    watchDom("[data-storage]", (element) => {
+      if (this.elementToRecord.has(element)) return;
+      const record = this.registerElement(element);
+      if (record) this.applyField(record.fieldName);
     });
-
-    if (document.body) {
-      observer.observe(document.body, { childList: true, subtree: true });
-    }
   }
 }
 

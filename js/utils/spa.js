@@ -13,9 +13,7 @@
  * @param {string|null} [id]          - id элемента, наличие которого обязательно
  * @param {string|null} [className]   - CSS-класс элемента, наличие которого обязательно
  * @param {number} [timeout=3000]     - мс ожидания элемента через MutationObserver
-
-  * spa(fn, options?)
-  */
+ */
 export function spa(fn, id = null, className = null, timeout = 3000) {
   function targetExists() {
     if (id && !document.getElementById(id)) return false;
