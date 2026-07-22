@@ -15,7 +15,8 @@
     --max-width: 1440px;
     --vh: 100dvh;
 
-    --text-color: light-dark(var(--deep-navy), var(--light-lavender));
+    --text-color: light-dark(var(--darkets), var(--lightest));
+    --text-secondary: light-dark(var(--lightest), var(--dark-muted));
     --text-color-adaptive: var(--accent);
 
     --background-color: light-dark(var(--white), var(--dark));
@@ -41,4 +42,8 @@
 [data-hue-adaptive] {
     background-color: var(--base-theme-color);
     filter: hue-rotate(calc(var(--hue-target, 0deg) - var(--hue-offset)));
+}
+
+[hidden] {
+    display: none;
 }

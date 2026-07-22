@@ -5,6 +5,8 @@ import { initNavigation } from "./ui/header.js";
 import "./ui/color.js";
 import "./utils/localstorage.js";
 import "./utils/svg.js";
+import "./utils/watch.js";
+import "./ui/replaced.js";
 
 globalThis.notification = notification;
 

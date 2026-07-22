@@ -1,4 +1,4 @@
-:root{
+:root {
     --default-chip-color: var(--pale);
     --default-chip-padding: calc(var(--padding) / 2) calc(var(--padding) / 1.33);
     --default-chip-border-radius: var(--border-radius);
@@ -41,6 +41,7 @@ h5,
 h6,
 p {
     color: var(--text-color);
+    cursor: default;
 }
 
 h1.accent,
