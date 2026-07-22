@@ -6,6 +6,9 @@
 @import url("layout/_index.css");
 @import url("objects/_index.css");
 
+@import url("animations/_init.css");
+
+
 * {
     padding: 0;
     margin: 0;

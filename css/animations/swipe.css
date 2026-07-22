@@ -1,0 +1,177 @@
+/* Базовые стили для контейнера */
+/*[data-switcher] {
+    position: relative;
+    overflow: hidden;
+}*/
+
+[data-switcher]:has(button[data-replaced*="swipe"]) {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+/* Стили для целевых элементов */
+[data-replaced]:not(button) {
+    transition: opacity 0.3s ease;
+}
+
+/* ===== SWIPE LEFT (слайд влево + fade out) ===== */
+.swipe-left-out {
+    animation: swipeLeftOut 0.4s ease-in-out forwards;
+}
+
+@keyframes swipeLeftOut {
+    0% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+}
+
+.swipe-left-in {
+    animation: swipeLeftIn 0.4s ease-in-out forwards;
+}
+
+@keyframes swipeLeftIn {
+    0% {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ===== SWIPE RIGHT (слайд вправо + fade out) ===== */
+.swipe-right-out {
+    animation: swipeRightOut 0.4s ease-in-out forwards;
+}
+
+@keyframes swipeRightOut {
+    0% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+.swipe-right-in {
+    animation: swipeRightIn 0.4s ease-in-out forwards;
+}
+
+@keyframes swipeRightIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ===== FADE (только затухание) ===== */
+.fade-out {
+    animation: fadeOut 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* ===== SLIDE UP (слайд вверх) ===== */
+.slide-up-out {
+    animation: slideUpOut 0.4s ease-in-out forwards;
+}
+
+@keyframes slideUpOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+}
+
+.slide-up-in {
+    animation: slideUpIn 0.4s ease-in-out forwards;
+}
+
+@keyframes slideUpIn {
+    0% {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== SCALE (масштабирование) ===== */
+.scale-out {
+    animation: scaleOut 0.3s ease-in-out forwards;
+}
+
+@keyframes scaleOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+
+.scale-in {
+    animation: scaleIn 0.3s ease-in-out forwards;
+}
+
+@keyframes scaleIn {
+    0% {
+        opacity: 0;
+        transform: scale(1.2);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
