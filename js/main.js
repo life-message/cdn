@@ -7,6 +7,7 @@ import "./utils/localstorage.js";
 import "./utils/svg.js";
 import "./utils/watch.js";
 import "./ui/replaced.js";
+import "./ui/lines.js";
 
 globalThis.notification = notification;
 

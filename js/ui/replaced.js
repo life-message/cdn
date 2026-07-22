@@ -37,5 +37,7 @@ function initContainer(container) {
 
 watchDom(`button[${ATTR}]`, (btn) => {
   const container = btn.closest("[data-switcher]") || btn.closest("form") || document.body;
+  // Очищаем флаг инициализации, чтобы переинициализировать при добавлении новых кнопок
+  delete container.dataset.switcherInited;
   initContainer(container);
 });

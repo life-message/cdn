@@ -93,3 +93,69 @@ a {
     text-decoration: none;
     color: var(--link-color, var(--default-link-color));
 }
+
+
+button.line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap);
+    flex-direction: row;
+    cursor: pointer;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+button.line:hover {
+    box-shadow: none;
+}
+
+button.line i {
+    color: var(--accent);
+}
+
+button.line>div,
+button.line nav {
+    flex: 1;
+}
+
+button.line div {
+    flex: 1;
+    height: 2px;
+    background: var(--default-border-color);
+    border-radius: 2px;
+    background-color: var(--accent);
+    width: 100%;
+    min-width: 2px;
+}
+
+button.line nav {
+    gap: 2px
+}
+
+button.line p {
+    color: var(--accent);
+    font-size: 12px;
+}
+
+button.line[data-position="left"] {
+    flex-direction: column;
+    width: auto;
+    align-self: stretch;
+}
+
+button.line[data-position="left"] p {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+}
+
+button.line[data-position="left"] nav {
+    flex-direction: column;
+}
+
+button.line[data-position="left"] div {
+    min-height: 2px;
+    width: 2px;
+    height: 100%;
+}
