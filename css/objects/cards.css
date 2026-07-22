@@ -32,40 +32,21 @@ article:hover {
     box-shadow: 0 0 0 calc(var(--border)*2) var(--border-color);
 }
 
-section>section:has(> article),
-section>section:has(> a > article) {
-    min-height: 0;
-    height: auto;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    width: auto;
+section:has(>header):has(>main) {
+    flex-direction: column;
+    gap: calc(var(--gap) * 3);
+    background-color: var(--lightest);
+    border-radius: var(--border-radius);
+    padding: calc(var(--padding) * 1.25);
+    justify-content: space-between;
 }
 
-section>section:has(> button) {
-    display: flex;
-    flex-direction: row;
-    gap: var(--gap);
-    flex-wrap: wrap;
+section:has(>header):has(>main) * {
+    color: var(--accent);
 }
 
-section>section:has(> button)>* {
-    flex: 1;
-    white-space: nowrap;
-}
-
-@media (max-width: 1000px) {
-
-    section>section:has(> article),
-    section>section:has(> a > article) {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-
-    section>section:has(> article),
-    section>section:has(> a > article) {
-        grid-template-columns: repeat(1, 1fr);
-    }
+section:has(>header):has(>main)>main:has(> :only-child) {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
