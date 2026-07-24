@@ -3,7 +3,7 @@
 
     --default-button-font-size: var(--h5);
 
-    --default-button-color: light-dark(var(--lightest), var(--dark-muted));
+    --default-button-color: light-dark(var(--lightest), var(--dark));
     --default-button-color-text: light-dark(var(--accent), var(--accent));
 
     --default-button-padding: var(--padding);

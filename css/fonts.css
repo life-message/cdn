@@ -1,8 +1,8 @@
 :root {
-    --default-chip-color: var(--pale);
+    --default-chip-color: light-dark(var(--pale), var(--dark));
     --default-chip-padding: calc(var(--padding) / 2) calc(var(--padding) / 1.33);
     --default-chip-border-radius: var(--border-radius);
-    --default-chip-color-text: var(--accent);
+    --default-chip-color-text: light-dark(var(--accent), var(--darkets));
 }
 
 h1 {

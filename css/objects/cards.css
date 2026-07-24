@@ -1,18 +1,7 @@
-@media (prefers-color-scheme: light) {
-    :root {
-        --card-color: var(--light-lavender);
-        --card-border-color: var(--light-lavender);
-        --card-border-color-active: var(--soft-purple);
-    }
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --card-color: var();
-        --card-border-color: var(--dark-plum);
-        --card-border-color-active: var(--soft-purple);
-    }
-
+:root {
+    --default-card-color: light-dark(var(--lightest), var(--dark));
+    --default-card-border-color: light-dark(var(--pale), var(--dark-muted));
+    --defaultcard-border-color-active: var(--accent);
 }
 
 article {
@@ -23,8 +12,7 @@ article {
     display: flex;
     flex-direction: column;
     gap: var(--gap);
-    transition:
-        transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
         box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -35,7 +23,7 @@ article:hover {
 section:has(>header):has(>main) {
     flex-direction: column;
     gap: calc(var(--gap) * 3);
-    background-color: var(--lightest);
+    background-color: var(--card-color, var(--default-card-color));
     border-radius: var(--border-radius);
     padding: calc(var(--padding) * 1.25);
     justify-content: space-between;

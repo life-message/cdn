@@ -19,12 +19,12 @@
     --text-secondary: light-dark(var(--lightest), var(--dark-muted));
     --text-color-adaptive: var(--accent);
 
-    --background-color: light-dark(var(--white), var(--dark));
+    --background-color: light-dark(var(--white), var(--dark-muted));
 
     --border: 2px;
     --border-radius: 12px;
-    --border-color: light-dark(var(--pale), var(--dark));
-    --border-color-active: light-dark(var(--accent), var(--dark));
+    --border-color: light-dark(var(--pale), var(--darkets));
+    --border-color-active: light-dark(var(--accent), var(--accent));
 
     --gap: 10px;
     --padding: 8px;
@@ -40,7 +40,7 @@
 }
 
 [data-hue-adaptive] {
-    background-color: var(--base-theme-color);
+    background-color: light-dark(var(--lightest), var(--dark-muted));
     filter: hue-rotate(calc(var(--hue-target, 0deg) - var(--hue-offset)));
 }
 

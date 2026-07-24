@@ -4,10 +4,10 @@
 
     --default-input-color: light-dark(var(--white), var(--dark));
     --default-input-color-text: light-dark(var(--accent), var(--accent));
-    --default-input-color-placeholder: light-dark(var(--lightest), var(--accent));
+    --default-input-color-placeholder: light-dark(var(--lightest), var(--darkets));
 
     --default-input-padding: var(--padding);
-    --default-input-border-radius:  var(--border-radius);
+    --default-input-border-radius: var(--border-radius);
 
     --default-input-border: var(--border);
     --default-input-border-color: var(--border-color);
