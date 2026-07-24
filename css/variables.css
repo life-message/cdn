@@ -19,11 +19,11 @@
     --text-secondary: light-dark(var(--lightest), var(--dark-muted));
     --text-color-adaptive: var(--accent);
 
-    --background-color: light-dark(var(--white), var(--dark-muted));
+    --background-color: light-dark(var(--white), var(--darkets));
 
     --border: 2px;
     --border-radius: 12px;
-    --border-color: light-dark(var(--pale), var(--darkets));
+    --border-color: light-dark(var(--pale), var(--dark-muted));
     --border-color-active: light-dark(var(--accent), var(--accent));
 
     --gap: 10px;
