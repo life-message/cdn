@@ -17,6 +17,12 @@ html>body>section {
     min-width: 500px;
 }
 
+@media (max-width: 768px) {
+    html>body>section {
+        min-width: 100%;
+    }
+}
+
 div {
     display: flex;
     flex-direction: column;

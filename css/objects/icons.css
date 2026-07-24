@@ -23,5 +23,6 @@ h6>i>* {
 }
 
 h1:has(>i:first-child) {
-    gap: calc(var(--gap)*2)
+    gap: calc(var(--gap)*2);
+    align-items: center;
 }

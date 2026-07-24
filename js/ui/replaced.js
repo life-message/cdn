@@ -2,70 +2,143 @@ import { watchDom } from "../utils/watch.js";
 
 const ATTR = "data-replaced";
 
-const AnimationManager = {
-  addInAnimation(target, anims) {
-    anims.forEach(cls => target.classList.add(`${cls}-in`));
-    setTimeout(() => anims.forEach(cls => target.classList.remove(`${cls}-in`)), 300);
-  },
+const parse = (el) => {
+  const [value, ...anims] = (el?.getAttribute(ATTR) || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
 
-  addOutAnimation(target, anims, onComplete) {
-    anims.forEach(cls => target.classList.add(`${cls}-out`));
-    setTimeout(() => {
-      anims.forEach(cls => target.classList.remove(`${cls}-out`));
-      if (onComplete) onComplete();
-    }, 300);
-  },
-
-  toggleFields(target, disabled) {
-    target.querySelectorAll("input, textarea, select").forEach(f => f.disabled = disabled);
-  }
+  return { value: value || "", anims };
 };
 
-function initContainer(container) {
-  if (container.dataset.switcherInited) return;
-  container.dataset.switcherInited = "true";
+const getContainer = (el) =>
+  el.closest("[data-switcher]") || document.body;
 
-  const buttons = container.querySelectorAll(`button[${ATTR}]`);
-  const targets = container.querySelectorAll(`[${ATTR}]:not(button)`);
+async function play(el, anims, phase, token, keep = false) {
+  if (el._animClasses) el.classList.remove(...el._animClasses);
 
-  function switchTo(value) {
-    const activeBtn = Array.from(buttons).find(btn => btn.getAttribute(ATTR).split(' ')[0] === value);
-    const anims = activeBtn ? activeBtn.getAttribute(ATTR).split(' ').slice(1) : [];
+  const classes = anims.map((name) => `${name}-${phase}`);
+  el._animClasses = classes.length ? classes : null;
 
-    buttons.forEach(btn => {
-      btn.classList.toggle("active", btn.getAttribute(ATTR).split(' ')[0] === value);
-    });
+  if (!classes.length) return true;
 
-    targets.forEach(target => {
-      const isVisible = target.getAttribute(ATTR).split(' ')[0] === value;
+  void el.offsetWidth;
 
-      if (isVisible) {
-        target.hidden = false;
-        AnimationManager.addInAnimation(target, anims);
-        AnimationManager.toggleFields(target, false);
-      } else {
-        AnimationManager.toggleFields(target, true);
-        AnimationManager.addOutAnimation(target, anims, () => {
-          target.hidden = true;
-        });
-      }
-    });
-  }
+  const before = new Set(el.getAnimations?.() || []);
 
-  buttons.forEach(btn => {
-    btn.addEventListener("click", () => switchTo(btn.getAttribute(ATTR).split(' ')[0]));
+  el.classList.add(...classes);
+  void el.offsetWidth;
+
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+
+  if (el._token !== token) return false;
+
+  const active = (el.getAnimations?.() || []).filter((animation) => {
+    const timing = animation.effect?.getComputedTiming?.();
+    return !before.has(animation) && timing && Number.isFinite(timing.endTime);
   });
 
-  const visibleTarget = Array.from(targets).find(t => !t.hidden);
-  const defaultValue = visibleTarget
-    ? visibleTarget.getAttribute(ATTR).split(' ')[0]
-    : buttons[0]?.getAttribute(ATTR).split(' ')[0];
+  if (active.length) {
+    await Promise.allSettled(active.map((animation) => animation.finished));
+  }
 
-  if (defaultValue) switchTo(defaultValue);
+  if (el._token !== token) return false;
+
+  if (!keep) {
+    el.classList.remove(...classes);
+    if (el._animClasses === classes) el._animClasses = null;
+  }
+
+  return true;
+}
+
+function toggleFields(target, disabled) {
+  target.querySelectorAll("input, textarea, select").forEach((field) => {
+    field.disabled = disabled;
+  });
+}
+
+async function switchTo(container, value, animate, forceAnims) {
+  const buttons = [...container.querySelectorAll(`button[${ATTR}]`)];
+  const targets = [...container.querySelectorAll(`[${ATTR}]:not(button)`)];
+
+  const activeBtn = buttons.find((btn) => parse(btn).value === value);
+  const openAnims = forceAnims ?? (activeBtn ? parse(activeBtn).anims : []);
+
+  buttons.forEach((btn) => {
+    btn.classList.toggle("active", parse(btn).value === value);
+  });
+
+  await Promise.all(
+    targets.map(async (target) => {
+      const token = Symbol();
+      target._token = token;
+
+      if (target._animClasses) {
+        target.classList.remove(...target._animClasses);
+        target._animClasses = null;
+      }
+
+      const show = parse(target).value === value;
+
+      if (show) {
+        target._anims = openAnims;
+        target.hidden = false;
+        toggleFields(target, false);
+
+        if (animate) {
+          await play(target, openAnims, "in", token);
+        }
+      } else {
+        toggleFields(target, true);
+
+        const ok =
+          animate && !target.hidden
+            ? await play(target, target._anims || [], "out", token, true)
+            : true;
+
+        if (ok && target._token === token) {
+          target.hidden = true;
+
+          if (target._animClasses) {
+            target.classList.remove(...target._animClasses);
+            target._animClasses = null;
+          }
+        }
+      }
+    })
+  );
+}
+
+function init(container) {
+  if (container._switcher) return;
+  container._switcher = true;
+
+  container.addEventListener("click", (event) => {
+    const btn = event.target.closest?.(`button[${ATTR}]`);
+    if (!btn || getContainer(btn) !== container) return;
+
+    const { value, anims } = parse(btn);
+    if (value) switchTo(container, value, true, anims);
+  });
+
+  const buttons = [...container.querySelectorAll(`button[${ATTR}]`)];
+  const targets = [...container.querySelectorAll(`[${ATTR}]:not(button)`)];
+
+  const visible = targets.find((target) => !target.hidden);
+  const activeBtn =
+    buttons.find((btn) => btn.classList.contains("active")) || buttons[0];
+
+  const value = visible
+    ? parse(visible).value
+    : activeBtn
+      ? parse(activeBtn).value
+      : "";
+
+  if (value) switchTo(container, value, false);
 }
 
 watchDom(`button[${ATTR}]`, (btn) => {
-  const container = btn.closest("[data-switcher]") || btn.closest("form") || document.body;
-  delete container.dataset.switcherInited;
-  initContainer(container);
+  const container = getContainer(btn);
+  if (container) init(container);
 });

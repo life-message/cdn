@@ -1,177 +1,148 @@
-/* Базовые стили для контейнера */
-/*[data-switcher] {
-    position: relative;
+/* ================= ПЕРЕМЕННЫЕ ================= */
+:root {
+    --animation-duration: 0.3s;
+    --animation-timing: ease-in-out;
+    --swipe-horizontal-distance: 100%;
+    --swipe-vertical-distance: 30%;
+}
+
+
+*:has(> [data-replaced]:not(button)) {
+    display: grid;
     overflow: hidden;
-}*/
-
-[data-switcher]:has(button[data-replaced*="swipe"]) {
-    display: flex;
-    flex-direction: row;
-    overflow: hidden;
 }
 
-/* Стили для целевых элементов */
-[data-replaced]:not(button) {
-    transition: opacity 0.3s ease;
+*:has(> [data-replaced]:not(button))>[data-replaced]:not(button) {
+    grid-area: 1 / 1;
 }
 
-/* ===== SWIPE LEFT (слайд влево + fade out) ===== */
-.swipe-left-out {
-    animation: swipeLeftOut 0.4s ease-in-out forwards;
-}
-
-@keyframes swipeLeftOut {
-    0% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translateX(-100%);
-    }
-}
 
 .swipe-left-in {
-    animation: swipeLeftIn 0.4s ease-in-out forwards;
+    animation: swipe-left-in var(--animation-duration) var(--animation-timing);
 }
 
-@keyframes swipeLeftIn {
-    0% {
+.swipe-left-out {
+    animation: swipe-left-out var(--animation-duration) var(--animation-timing);
+}
+
+@keyframes swipe-left-in {
+    from {
         opacity: 0;
-        transform: translateX(100%);
+        transform: translateX(var(--swipe-horizontal-distance));
     }
 
-    100% {
+    to {
         opacity: 1;
         transform: translateX(0);
     }
 }
 
-/* ===== SWIPE RIGHT (слайд вправо + fade out) ===== */
-.swipe-right-out {
-    animation: swipeRightOut 0.4s ease-in-out forwards;
-}
-
-@keyframes swipeRightOut {
-    0% {
+@keyframes swipe-left-out {
+    from {
         opacity: 1;
         transform: translateX(0);
     }
 
-    100% {
+    to {
         opacity: 0;
-        transform: translateX(100%);
+        transform: translateX(var(--swipe-horizontal-distance));
     }
 }
 
 .swipe-right-in {
-    animation: swipeRightIn 0.4s ease-in-out forwards;
+    animation: swipe-right-in var(--animation-duration) var(--animation-timing);
 }
 
-@keyframes swipeRightIn {
-    0% {
+.swipe-right-out {
+    animation: swipe-right-out var(--animation-duration) var(--animation-timing);
+}
+
+@keyframes swipe-right-in {
+    from {
         opacity: 0;
-        transform: translateX(-100%);
+        transform: translateX(calc(-1 * var(--swipe-horizontal-distance)));
     }
 
-    100% {
+    to {
         opacity: 1;
         transform: translateX(0);
     }
 }
 
-/* ===== FADE (только затухание) ===== */
-.fade-out {
-    animation: fadeOut 0.3s ease-in-out forwards;
-}
-
-@keyframes fadeOut {
-    0% {
+@keyframes swipe-right-out {
+    from {
         opacity: 1;
+        transform: translateX(0);
     }
 
-    100% {
+    to {
         opacity: 0;
+        transform: translateX(calc(-1 * var(--swipe-horizontal-distance)));
     }
 }
 
-.fade-in {
-    animation: fadeIn 0.3s ease-in-out forwards;
+
+.swipe-up-in {
+    animation: swipe-up-in var(--animation-duration) var(--animation-timing);
 }
 
-@keyframes fadeIn {
-    0% {
+.swipe-up-out {
+    animation: swipe-up-out var(--animation-duration) var(--animation-timing);
+}
+
+@keyframes swipe-up-in {
+    from {
         opacity: 0;
+        transform: translateY(calc(-1 * var(--swipe-vertical-distance)));
     }
 
-    100% {
-        opacity: 1;
-    }
-}
-
-/* ===== SLIDE UP (слайд вверх) ===== */
-.slide-up-out {
-    animation: slideUpOut 0.4s ease-in-out forwards;
-}
-
-@keyframes slideUpOut {
-    0% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translateY(-100%);
-    }
-}
-
-.slide-up-in {
-    animation: slideUpIn 0.4s ease-in-out forwards;
-}
-
-@keyframes slideUpIn {
-    0% {
-        opacity: 0;
-        transform: translateY(100%);
-    }
-
-    100% {
+    to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-/* ===== SCALE (масштабирование) ===== */
-.scale-out {
-    animation: scaleOut 0.3s ease-in-out forwards;
-}
-
-@keyframes scaleOut {
-    0% {
+@keyframes swipe-up-out {
+    from {
         opacity: 1;
-        transform: scale(1);
+        transform: translateY(0);
     }
 
-    100% {
+    to {
         opacity: 0;
-        transform: scale(0.8);
+        transform: translateY(calc(-1 * var(--swipe-vertical-distance)));
     }
 }
 
-.scale-in {
-    animation: scaleIn 0.3s ease-in-out forwards;
+
+.swipe-down-in {
+    animation: swipe-down-in var(--animation-duration) var(--animation-timing);
 }
 
-@keyframes scaleIn {
-    0% {
+.swipe-down-out {
+    animation: swipe-down-out var(--animation-duration) var(--animation-timing);
+}
+
+@keyframes swipe-down-in {
+    from {
         opacity: 0;
-        transform: scale(1.2);
+        transform: translateY(calc(1 * var(--swipe-vertical-distance)));
     }
 
-    100% {
+    to {
         opacity: 1;
-        transform: scale(1);
+        transform: translateY(0);
+    }
+}
+
+@keyframes swipe-down-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(calc(1 * var(--swipe-vertical-distance)));
     }
 }
