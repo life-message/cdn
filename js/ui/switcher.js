@@ -1,4 +1,4 @@
-import { watchDom } from "../utils/watch.js";
+import { SPA } from "../utils/spa.js";
 import {
   playClassAnimation,
   clearAnimationClasses,
@@ -109,7 +109,10 @@ function init(container) {
   }
 }
 
-watchDom(`button[${ATTR}]`, (btn) => {
+SPA((btn) => {
   const container = getContainer(btn);
   if (container) init(container);
+}, {
+  selector: `button[${ATTR}]`,
+  continuous: true
 });

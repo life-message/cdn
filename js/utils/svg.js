@@ -1,4 +1,4 @@
-import { spa } from "./spa.js"
+import { SPA } from "./spa.js"
 
 async function replaceSvg() {
   const images = document.querySelectorAll('img[alt*="svg"]');
@@ -30,4 +30,4 @@ async function replaceSvg() {
   }
 }
 
-spa(replaceSvg);
+SPA(replaceSvg);

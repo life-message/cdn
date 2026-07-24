@@ -1,4 +1,4 @@
-import { watchDom } from "./watch.js";
+import { SPA } from "./spa.js";
 
 class LocalStorageFieldManager {
   constructor() {
@@ -263,10 +263,13 @@ class LocalStorageFieldManager {
   }
 
   setupWatcher() {
-    watchDom("[data-storage]", (element) => {
+    SPA((element) => {
       if (this.elementToRecord.has(element)) return;
       const record = this.registerElement(element);
       if (record) this.applyField(record.fieldName);
+    }, {
+      selector: "[data-storage]",
+      continuous: true
     });
   }
 }

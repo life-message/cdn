@@ -1,5 +1,5 @@
 import { fetchTextCached } from "./dom.js";
-import { watchDom } from "../utils/watch.js";
+import { SPA } from "../utils/spa.js";
 
 async function loadTemplate(element) {
   const name = element.dataset.template;
@@ -13,4 +13,9 @@ async function loadTemplate(element) {
   }
 }
 
-watchDom("[data-template]", loadTemplate);
+SPA((node) => {
+  loadTemplate(node);
+}, {
+  selector: "[data-template]",
+  continuous: true
+});

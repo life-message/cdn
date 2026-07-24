@@ -1,4 +1,4 @@
-import { watchDom } from "../utils/watch.js";
+import { SPA } from "../utils/spa.js";
 
 const HUE_KEY = "color";
 
@@ -22,8 +22,10 @@ const setHue = (deg) => {
   syncAllButtons();
 };
 
-// Подсвечиваем кнопки по мере их появления в DOM (в т.ч. после SPA-навигации)
-watchDom("[data-hue-adaptive]", (btn) => syncButton(btn, getHue()));
+SPA((btn) => syncButton(btn, getHue()), {
+  selector: "[data-hue-adaptive]",
+  continuous: true
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   setHue(getHue());

@@ -1,7 +1,7 @@
 dialog {
     filter: hue-rotate(var(--hue-offset));
     box-sizing: border-box;
-    background-color: var(--background);
+    background-color: var(--background-color);
     border: var(--border) solid var(--border-color);
     border-radius: var(--border-radius);
     min-width: 400px;

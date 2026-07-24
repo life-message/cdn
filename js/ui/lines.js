@@ -1,10 +1,11 @@
-import { watchDom } from "../utils/watch.js";
+import { SPA } from "../utils/spa.js";
 
-const observer = watchDom('button[data-line]:not([data-processed])', (button) => {
+SPA((button) => {
   if (button.hasAttribute('data-processed')) return;
 
   const replacedValue = button.getAttribute('data-replaced');
   const lineValue = button.getAttribute('data-line') || 'down';
+
   const button_line = document.createElement('button');
   button_line.setAttribute("data-position", lineValue);
 
@@ -15,8 +16,8 @@ const observer = watchDom('button[data-line]:not([data-processed])', (button) =>
   });
 
   button_line.classList.add('line');
-
   const iconClass = `iconoir-page-${lineValue}`;
+
   const nav = document.createElement('nav');
   const div1 = document.createElement('div');
   const p = document.createElement('p');
@@ -37,5 +38,11 @@ const observer = watchDom('button[data-line]:not([data-processed])', (button) =>
   button_line.appendChild(div3);
 
   button.setAttribute('data-processed', 'true');
-  button.parentNode.replaceChild(button_line, button);
+  if (button.parentNode) {
+    button.parentNode.replaceChild(button_line, button);
+  }
+
+}, {
+  selector: 'button[data-line]:not([data-processed])',
+  continuous: true
 });
