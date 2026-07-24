@@ -1,4 +1,8 @@
 import { watchDom } from "../utils/watch.js";
+import {
+  playClassAnimation,
+  clearAnimationClasses,
+} from "./animate.js";
 
 const ATTR = "data-replaced";
 
@@ -8,49 +12,14 @@ const parse = (el) => {
     .split(/\s+/)
     .filter(Boolean);
 
-  return { value: value || "", anims };
+  return {
+    value: value || "",
+    anims,
+  };
 };
 
 const getContainer = (el) =>
   el.closest("[data-switcher]") || document.body;
-
-async function play(el, anims, phase, token, keep = false) {
-  if (el._animClasses) el.classList.remove(...el._animClasses);
-
-  const classes = anims.map((name) => `${name}-${phase}`);
-  el._animClasses = classes.length ? classes : null;
-
-  if (!classes.length) return true;
-
-  void el.offsetWidth;
-
-  const before = new Set(el.getAnimations?.() || []);
-
-  el.classList.add(...classes);
-  void el.offsetWidth;
-
-  await new Promise((resolve) => requestAnimationFrame(resolve));
-
-  if (el._token !== token) return false;
-
-  const active = (el.getAnimations?.() || []).filter((animation) => {
-    const timing = animation.effect?.getComputedTiming?.();
-    return !before.has(animation) && timing && Number.isFinite(timing.endTime);
-  });
-
-  if (active.length) {
-    await Promise.allSettled(active.map((animation) => animation.finished));
-  }
-
-  if (el._token !== token) return false;
-
-  if (!keep) {
-    el.classList.remove(...classes);
-    if (el._animClasses === classes) el._animClasses = null;
-  }
-
-  return true;
-}
 
 function toggleFields(target, disabled) {
   target.querySelectorAll("input, textarea, select").forEach((field) => {
@@ -63,7 +32,11 @@ async function switchTo(container, value, animate, forceAnims) {
   const targets = [...container.querySelectorAll(`[${ATTR}]:not(button)`)];
 
   const activeBtn = buttons.find((btn) => parse(btn).value === value);
-  const openAnims = forceAnims ?? (activeBtn ? parse(activeBtn).anims : []);
+  const anims = forceAnims ?? (activeBtn ? parse(activeBtn).anims : []);
+
+  // Первая анимация — входящему блоку,
+  // вторая (если есть) — выходящему.
+  const [inName, outName = inName] = anims;
 
   buttons.forEach((btn) => {
     btn.classList.toggle("active", parse(btn).value === value);
@@ -73,37 +46,33 @@ async function switchTo(container, value, animate, forceAnims) {
     targets.map(async (target) => {
       const token = Symbol();
       target._token = token;
+      const isCurrent = () => target._token === token;
 
-      if (target._animClasses) {
-        target.classList.remove(...target._animClasses);
-        target._animClasses = null;
-      }
+      clearAnimationClasses(target);
 
       const show = parse(target).value === value;
 
       if (show) {
-        target._anims = openAnims;
         target.hidden = false;
         toggleFields(target, false);
 
-        if (animate) {
-          await play(target, openAnims, "in", token);
+        if (animate && inName) {
+          await playClassAnimation(target, [inName], "in", { isCurrent });
         }
       } else {
         toggleFields(target, true);
 
         const ok =
-          animate && !target.hidden
-            ? await play(target, target._anims || [], "out", token, true)
+          animate && outName && !target.hidden
+            ? await playClassAnimation(target, [outName], "out", {
+              isCurrent,
+              keep: true,
+            })
             : true;
 
-        if (ok && target._token === token) {
+        if (ok && isCurrent()) {
           target.hidden = true;
-
-          if (target._animClasses) {
-            target.classList.remove(...target._animClasses);
-            target._animClasses = null;
-          }
+          clearAnimationClasses(target);
         }
       }
     })
@@ -135,7 +104,9 @@ function init(container) {
       ? parse(activeBtn).value
       : "";
 
-  if (value) switchTo(container, value, false);
+  if (value) {
+    switchTo(container, value, false);
+  }
 }
 
 watchDom(`button[${ATTR}]`, (btn) => {
