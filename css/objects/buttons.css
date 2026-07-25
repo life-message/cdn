@@ -67,8 +67,8 @@ button:hover {
 }
 
 button:active {
-    transition: 200ms;
-    box-shadow: none;
+    transition: 150ms ease;
+    box-shadow: inset 0 0 0 calc(var(--default-button-border)*1.5) var(--default-button-border-color-active);
 }
 
 button:disabled {
