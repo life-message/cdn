@@ -6,12 +6,12 @@
 }
 
 
-*:has(> [data-replaced]:not(button)) {
+*:has(> .animate[data-replaced]:not(button)) {
     display: grid;
     overflow: hidden;
 }
 
-*:has(> [data-replaced]:not(button))>[data-replaced]:not(button) {
+*:has(> .animate[data-replaced]:not(button))>[data-replaced]:not(button) {
     grid-area: 1 / 1;
 }
 

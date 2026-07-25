@@ -5,6 +5,7 @@ export function clearAnimationClasses(el) {
 
   if (classes?.length) {
     el.classList.remove(...classes);
+    el.classList.remove("animate");
   }
 
   animationClasses.delete(el);
@@ -33,6 +34,7 @@ export async function playClassAnimation(el, anims, phase, options = {}) {
   const before = new Set(el.getAnimations?.() || []);
 
   el.classList.add(...classes);
+  el.classList.add("animate");
   void el.offsetWidth;
 
   await new Promise((resolve) => requestAnimationFrame(resolve));
@@ -66,6 +68,7 @@ export async function playClassAnimation(el, anims, phase, options = {}) {
 
     if (current === classes) {
       el.classList.remove(...classes);
+      el.classList.remove("animate");
       animationClasses.delete(el);
     }
   }
