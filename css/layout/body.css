@@ -12,6 +12,10 @@ html>body {
     gap: 60px;
 }
 
+html>body:not(:has(> main)) {
+    max-height: 100dvh;
+}
+
 body>main {
     margin: 0 auto;
     width: 100%;

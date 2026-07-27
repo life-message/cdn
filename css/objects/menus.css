@@ -1,3 +1,25 @@
+@keyframes dialogAppear {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes backdropFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
 dialog {
     filter: hue-rotate(var(--hue-offset));
     box-sizing: border-box;
@@ -17,11 +39,14 @@ dialog {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    animation: dialogAppear 0.3s ease-out forwards;
 }
 
 dialog::backdrop {
     background: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(2px);
+
+    animation: backdropFadeIn 0.3s ease-out forwards;
 
     @media (max-width: 768px) {
         .overlay {
@@ -38,6 +63,18 @@ dialog::backdrop {
 }
 
 @media (max-width: 768px) {
+    @keyframes dialogAppearMobile {
+        from {
+            opacity: 0;
+            transform: translateY(100%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     dialog {
         width: 100%;
         top: auto;
@@ -48,4 +85,6 @@ dialog::backdrop {
         border: none;
         box-shadow: inset 0 2px 0 0 var(--border-color);
         padding-top: calc(var(--padding)*4);
+        animation: dialogAppearMobile 0.3s ease-out forwards;
     }
+}
