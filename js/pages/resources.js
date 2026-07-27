@@ -3,6 +3,7 @@ import { dom } from "./dom.js";
 export class ResourceManager {
   constructor() {
     this.loaded = new Set();
+    this.pageScripts = new Set();
   }
 
   loadStyles(styles) {
@@ -23,7 +24,6 @@ export class ResourceManager {
       this.loaded.add(id);
     });
 
-    // Убираем стили прошлой страницы, которых больше нет в текущей
     document.querySelectorAll('[data-spa-resource="style"]').forEach((el) => {
       const id = el.getAttribute("data-resource-id");
       if (!currentIds.has(id)) {
@@ -36,7 +36,10 @@ export class ResourceManager {
   loadScripts(scripts, target = "head") {
     scripts.forEach((oldScript) => {
       const id = this.getResourceId(oldScript);
-      if (this.loaded.has(id)) return;
+      if (this.loaded.has(id)) {
+        // Опционально: можно добавить логику перезапуска, если это не модуль
+        return;
+      }
 
       const newScript = dom.create("script", {}, "");
       Array.from(oldScript.attributes).forEach((attr) => {
@@ -49,8 +52,19 @@ export class ResourceManager {
       if (newScript.src) newScript.async = false;
 
       (target === "head" ? document.head : document.body).appendChild(newScript);
+
       this.loaded.add(id);
+      this.pageScripts.add(id);
     });
+  }
+
+  clearPageResources() {
+    this.pageScripts.forEach(id => {
+      const el = document.querySelector(`[data-resource-id="${id}"]`);
+      if (el) el.remove();
+      this.loaded.delete(id);
+    });
+    this.pageScripts.clear();
   }
 
   getResourceId(element) {

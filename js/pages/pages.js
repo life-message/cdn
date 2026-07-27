@@ -8,7 +8,7 @@ class SPARouter {
     this.routesConfig = null;
     this.htmlCache = new Map();
     this.defaultExtensions = ["html", "htm"];
-    this.routes = []; // Скомпилированные маршруты с regex
+    this.routes = [];
 
     this.seoManager = new SEOManager();
     this.resourceManager = new ResourceManager();
@@ -16,7 +16,7 @@ class SPARouter {
 
   async init() {
     await this.loadRoutesConfig();
-    this.compileRoutes(); // Компилируем маршруты в regex паттерны
+    this.compileRoutes();
     page("*", (ctx) => this.loadPage(ctx.path));
     page.start();
   }
@@ -118,7 +118,9 @@ class SPARouter {
   }
 
   renderPage(pageData) {
+    this.resourceManager.clearPageResources();
     this.seoManager.update(pageData.seo);
+
     document.body.innerHTML = pageData.bodyContent;
     window.routeParams = pageData.params || {};
 
