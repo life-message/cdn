@@ -32,5 +32,5 @@ async function replaceSvg() {
 
 SPA(replaceSvg, {
   selector: 'img[alt*="svg"]',
-  continuous: true  // Важно! Обрабатывать каждый найденный элемент
+  continuous: true
 });
