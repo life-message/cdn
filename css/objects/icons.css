@@ -1,5 +1,6 @@
 *[class^='iconoir-'],
 *[class*=' iconoir-'] {
+    display: flex !important;
     flex-direction: row;
     gap: var(--gap);
     align-items: center;

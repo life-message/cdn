@@ -1,0 +1,66 @@
+:root {
+    color-scheme: light dark;
+    --default-notification-transform: none;
+    --default-notification-top: 20px;
+    --default-notification-right: 20px;
+    --default-notification-left: auto;
+    --default-notification-z-index: 9999;
+    --default-notification-gap: 10px;
+    --default-notification-transform-animation: translateX(120%);
+
+    --default-notification-color-text: var(--darkets);
+    --default-notification-color: var(--accent);
+
+    --default-notification-radius: var(--border-radius);
+    --default-notification-padding: var(--border-radius) calc(var(--border-radius) * 2);
+    --default-notification-shadow: var(--shadow-bottom);
+    --default-notification-font-size: var(--h5);
+    --default-notification-font-weight: 600;
+    --default-notification-max-width: 320px;
+
+    --default-notification-error-color-text: #fff;
+    --default-notification-error-color: #e53935;
+}
+
+.notification-container {
+    position: fixed;
+    top: var(--notification-top, var(--default-notification-top));
+    right: var(--notification-right, var(--default-notification-right));
+    left: var(--notification-left, var(--default-notification-left));
+    transform: var(--notification-transform, var(--default-notification-transform));
+    z-index: var(--notification-z-index, var(--default-notification-z-index));
+    display: flex;
+    flex-direction: column;
+    gap: var(--notification-gap, var(--default-notification-gap));
+    pointer-events: none;
+}
+
+.notification {
+    color: var(--notification-color-text, var(--default-notification-color-text));
+    background-color: var(--notification-color, var(--default-notification-color));
+    border-radius: var(--notification-radius, var(--default-notification-radius));
+    padding: var(--notification-padding, var(--default-notification-padding));
+    box-shadow: var(--notification-shadow, var(--default-notification-shadow));
+    font-size: var(--notification-font-size, var(--default-notification-font-size));
+    max-width: var(--notification-max-width, var(--default-notification-max-width));
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transform: translateY(-20%);
+    opacity: 0;
+    transition: 0.3s ease;
+    pointer-events: auto;
+    font-weight: var(--notification-font-weight, var(--default-notification-font-weight));
+}
+
+.notification.show {
+    transform: var(--notification-transform-animation, var(--default-notification-transform-animation));
+    opacity: 1;
+}
+
+.notification.error {
+    color: var(--notification-error-color-text, var(--default-notification-error-color-text));
+    background-color: var(--notification-error-color, var(--default-notification-error-color));
+}
