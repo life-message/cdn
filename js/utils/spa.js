@@ -20,16 +20,12 @@
  */
 export function SPA(fn, { id = null, className = null, selector = null, timeout = 3000, continuous = false } = {}) {
 
-  // Определяем итоговый селектор для поиска
   const finalSelector = selector || (id ? `#${id}` : (className ? `.${className}` : null));
-
-  // Проверка соответствия узла селектору
   const matchesTarget = (node) => {
     if (!finalSelector) return true;
     return node.matches?.(finalSelector);
   };
 
-  // Сканирование узла и его потомков (логика из watch.js)
   const scanNode = (node) => {
     if (matchesTarget(node)) {
       fn(node);
@@ -42,22 +38,18 @@ export function SPA(fn, { id = null, className = null, selector = null, timeout 
   function tryRun() {
     if (!finalSelector) return;
 
-    // 1. Проверяем наличие элементов прямо сейчас
     const existingElements = document.querySelectorAll(finalSelector);
     const targets = Array.from(existingElements).filter(matchesTarget);
 
     if (targets.length > 0) {
       if (continuous) {
-        // В режиме watch вызываем функцию для каждого найденного элемента
         targets.forEach(fn);
       } else {
-        // В обычном режиме вызываем один раз и выходим
         fn();
         return;
       }
     }
 
-    // Если элементов нет или режим continuous — ставим Observer
     const deadline = Date.now() + timeout;
     let observer = new MutationObserver((mutations) => {
       for (const { addedNodes } of mutations) {
@@ -68,7 +60,6 @@ export function SPA(fn, { id = null, className = null, selector = null, timeout 
         }
       }
 
-      // Логика отключения для обычного режима (не continuous)
       if (!continuous) {
         const currentTargets = document.querySelectorAll(finalSelector);
         const hasTarget = Array.from(currentTargets).some(matchesTarget);
@@ -87,11 +78,9 @@ export function SPA(fn, { id = null, className = null, selector = null, timeout 
     observers.add(observer);
   }
 
-  // Хранилище активных наблюдателей
   const observers = new Set();
 
   function onNavigate() {
-    // При навигации сбрасываем observers только если это НЕ глобальный watch
     if (!continuous) {
       for (const obs of observers) {
         obs.disconnect();
@@ -99,18 +88,15 @@ export function SPA(fn, { id = null, className = null, selector = null, timeout 
       observers.clear();
     }
 
-    // Небольшая задержка для обновления DOM фреймворком
     setTimeout(tryRun, 0);
   }
 
-  // --- Первоначальная загрузка ---
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", tryRun, { once: true });
   } else {
     tryRun();
   }
 
-  // --- Патчим history один раз глобально ---
   if (!window.__spaPatched) {
     window.__spaPatched = true;
 
@@ -126,8 +112,6 @@ export function SPA(fn, { id = null, className = null, selector = null, timeout 
     patchHistory("replaceState");
   }
 
-  // --- Слушаем навигацию ---
-  // Используем свойство функции для хранения обработчика, чтобы не дублировать слушатели
   if (!fn.__spaNavigateHandler) {
     fn.__spaNavigateHandler = onNavigate;
     window.addEventListener("spa:navigate", onNavigate);
