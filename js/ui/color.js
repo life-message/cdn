@@ -27,6 +27,12 @@ SPA((btn) => syncButton(btn, getHue()), {
   continuous: true
 });
 
+window.addEventListener('storage', (e) => {
+  if (e.key === 'color') {
+    setHue(e.newValue);
+  }
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   setHue(getHue());
 
