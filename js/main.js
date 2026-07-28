@@ -6,8 +6,11 @@ import "./utils/localstorage.js";
 import "./utils/svg.js";
 import "./ui/switcher.js";
 import "./ui/lines.js";
+import { SPA } from './utils/spa.js';
 
 globalThis.notification = notification;
 
 export { notification };
 export default notification;
+
+window.SPA = SPA;
