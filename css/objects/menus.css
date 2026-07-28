@@ -88,3 +88,14 @@ dialog::backdrop {
         animation: dialogAppearMobile 0.3s ease-out forwards;
     }
 }
+
+dialog>section {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: calc(var(--gap)*2);
+}
+
+dialog::-webkit-scrollbar {
+    width: 0px;
+}
