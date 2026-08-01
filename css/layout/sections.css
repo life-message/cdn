@@ -16,7 +16,7 @@ html>body>section {
     min-width: 500px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: var(--mobile-width)) {
     html>body>section {
         min-width: 100%;
     }
@@ -42,7 +42,7 @@ menu {
     gap: var(--gap);
 }
 
-@media (max-width: 768px) {
+@media (max-width: var(--mobile-width)) {
     section>.title {
         text-align: center;
 

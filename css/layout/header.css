@@ -37,7 +37,7 @@ header>nav>*:last-child {
     justify-content: end;
 }
 
-@media (max-width: 768px) {
+@media (max-width: var(--mobile-width)) {
     body>header {
         bottom: 20px;
         top: auto;
@@ -48,11 +48,5 @@ header>nav>*:last-child {
         flex: 1;
         min-width: 80px;
         gap: 0 !important;
-    }
-
-    header>nav>*[class^='iconoir-']::before,
-    header>nav>*[class*=' iconoir-']::before {
-        width: 1.5em !important;
-        height: 1.5em !important;
     }
 }
