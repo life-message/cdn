@@ -15,8 +15,6 @@
     --max-width: 1440px;
     --vh: 100dvh;
 
-    --mobile-width: 768px;
-
     --text-color: light-dark(var(--darkets), var(--lightest));
     --text-secondary: light-dark(var(--lightest), var(--dark-muted));
     --text-color-adaptive: var(--accent);

@@ -37,7 +37,7 @@ header>nav>*:last-child {
     justify-content: end;
 }
 
-@media (max-width: var(--mobile-width)) {
+@media (max-width: 768px) {
     body>header {
         bottom: 20px;
         top: auto;
