@@ -5,16 +5,12 @@
     gap: var(--gap);
     align-items: center;
     font-size: 1.225em;
-    position: relative;
-    z-index: 1;
 }
 
 *[class^='iconoir-']::before,
 *[class*=' iconoir-']::before {
     width: 1.250em !important;
     height: 1.250em !important;
-    position: relative !important;
-    z-index: 0 !important;
 }
 
 h1>i>*,
