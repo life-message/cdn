@@ -51,7 +51,14 @@ h3.accent,
 h4.accent,
 h5.accent,
 h6.accent,
-p.accent {
+p.accent,
+h1 b.accent,
+h2 b.accent,
+h3 b.accent,
+h4 b.accent,
+h5 b.accent,
+h6 b.accent,
+p b.accent {
     color: var(--accent);
 }
 
