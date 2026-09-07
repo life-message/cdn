@@ -6,7 +6,7 @@
     --default-notification-left: auto;
     --default-notification-z-index: 9999;
     --default-notification-gap: 10px;
-    --default-notification-transform-animation: translateX(120%);
+    --default-notification-transform-animation: translateX(0%);
 
     --default-notification-color-text: var(--darkets);
     --default-notification-color: var(--accent);
